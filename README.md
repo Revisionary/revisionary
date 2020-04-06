@@ -1,0 +1,12 @@
+# Revisionary App
+
+The new live feedback tool for live websites. You can change any website as you wish.
+
+
+## Deployment
+
+* $ git clone https://github.com/bilaltas/revisionary-project.git && cd revisionary-project
+* $ sudo bash start
+* Type 'local' or 'remote' and hit enter.
+
+Note: Don't forget to update SMTP credentials and rebuild the site.

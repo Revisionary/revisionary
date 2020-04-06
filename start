@@ -1,0 +1,226 @@
+#!/bin/bash
+
+
+ACTION=ask
+
+
+
+# Create an .env file and start installation
+if [[ ! -f .env ]]; then
+
+	read -ep "Which environment are you installing on? (local | remote): " ENV
+	if [[ $ENV == remote ]]; then
+
+		cp .env.remote .env
+
+	else
+
+		cp .env.local .env
+
+	fi
+
+	ACTION=install
+
+fi
+
+
+
+# Get data from .env file
+source .env
+
+
+
+## CLONNING THE SERVICES
+# Reverse Proxy Repo
+if [[ ! -d proxy ]]; then
+
+	echo "Proxy clonning..."
+	git clone https://github.com/bilaltas/revisionary-proxy.git proxy
+
+fi
+
+# Landing Page Repo
+if [[ ! -d landing ]]; then
+
+	echo "Landing clonning..."
+	git clone https://github.com/bilaltas/revisionary-landing.git landing
+
+fi
+
+# Dashboard Page Repo
+if [[ ! -d dashboard ]]; then
+
+	echo "Dashboard clonning..."
+	git clone https://github.com/bilaltas/revisionary-dashboard.git dashboard
+
+fi
+
+# Backend Repo
+if [[ ! -d backend ]]; then
+
+	echo "Backend clonning..."
+	git clone https://github.com/bilaltas/revisionary-backend.git backend
+
+fi
+
+# Database Repo
+if [[ ! -d database ]]; then
+
+	echo "Database clonning..."
+	git clone https://github.com/bilaltas/revisionary-database.git database
+
+fi
+
+# Chrome Repo
+if [[ ! -d chrome ]]; then
+
+	echo "Chrome clonning..."
+	git clone https://github.com/bilaltas/revisionary-chrome.git chrome
+
+fi
+
+
+
+# Ask the action
+if [[ $ACTION == ask ]]; then
+
+	read -ep "Which do you want to do? (install | pull | rebuild | update | reset | remove-logs | prune | reset-all): " ACTION
+
+fi
+
+
+
+if [[ $ACTION == install ]]; then
+
+
+	echo "Building the project..."
+	docker-compose up -d
+	echo "Project built."
+
+
+	echo "Checking MySQL to be ready..."
+	while ! docker-compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
+		echo "Waiting for database connection..."
+		sleep 3
+	done
+	echo "Site is ready!"
+
+
+elif [[ $ACTION == pull ]]; then
+
+
+	echo "Proxy:"
+	( cd proxy && git pull )
+
+	echo "Landing:"
+	( cd landing && git pull )
+
+	echo "Dashboard:"
+	( cd dashboard && git pull )
+
+	echo "Backend:"
+	( cd backend && git pull )
+
+	echo "Database:"
+	( cd database && git pull )
+
+	echo "Chrome:"
+	( cd chrome && git pull )
+
+
+elif [[ $ACTION == rebuild ]]; then
+
+
+	echo "Rebuilding the project..."
+	docker-compose up -d --build --force-recreate
+	echo "Project rebuilt."
+
+
+	echo "Checking MySQL to be ready..."
+	while ! docker-compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
+		echo "Waiting for database connection..."
+		sleep 3
+	done
+	echo "Site is ready!"
+
+
+elif [[ $ACTION == update ]]; then
+
+
+	echo "Updating the server..."
+	docker-compose stop
+	docker-compose rm -f
+	docker-compose pull
+	docker-compose up -d --build
+	echo "Server up-to-date."
+
+
+	echo "Checking MySQL to be ready..."
+	while ! docker-compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
+		echo "Waiting for database connection..."
+		sleep 3
+	done
+	echo "Site is ready!"
+
+
+elif [[ $ACTION == reset ]]; then
+
+
+	echo "Closing the server..."
+	docker-compose down
+	echo "Server became down."
+
+
+	echo "Cleaning files..."
+	sh helpers/clean-logs.sh
+	sh helpers/clean-files.sh
+	echo "All the project reset."
+
+
+elif [[ $ACTION == remove-logs ]]; then
+
+
+	echo "Closing the server..."
+	docker-compose down
+	echo "Server became down."
+
+
+	echo "Removing the files..."
+	sh helpers/clean-logs.sh
+	echo "Files are removed."
+
+
+	echo "Starting the server..."
+	docker-compose up -d
+	echo "Server has been started."
+
+
+elif [[ $ACTION == prune ]]; then
+
+
+	echo "Closing the server..."
+	docker-compose down
+	echo "Server became down."
+
+
+	echo "Pruning the docker..."
+	sh helpers/clean-docker.sh
+	echo "Docker reset."
+
+
+elif [[ $ACTION == reset-all ]]; then
+
+
+	echo "Closing the server..."
+	docker-compose down
+	echo "Server became down."
+
+
+	echo "Resetting all..."
+	sh helpers/clean-logs.sh
+	sh helpers/clean-files.sh
+	sh helpers/clean-docker.sh
+	echo "All the project and Docker reset."
+
+
+fi
