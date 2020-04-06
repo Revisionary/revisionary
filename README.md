@@ -10,9 +10,9 @@ The new live feedback tool for live websites. You can change any website as you 
 
 
 ## Local Domains for /etc/hosts file
-127.0.0.1 dev.revisionaryapp.com
-127.0.0.1 dapp.revisionary.co
-127.0.0.1 dapi.revisionary.co
+* 127.0.0.1 dev.revisionaryapp.com
+* 127.0.0.1 dapp.revisionary.co
+* 127.0.0.1 dapi.revisionary.co
 
 
 ## Note
