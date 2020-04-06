@@ -108,7 +108,7 @@ services:
             - 8080:3000
         volumes:
             - ./chrome/src:/chrome/src
-            - ./backend/cache:/chrome/cache
+            - ./backend/src/cache:/chrome/cache
         command:
             "npm start"
         networks:
