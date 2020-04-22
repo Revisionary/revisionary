@@ -109,8 +109,6 @@ services:
         volumes:
             - ./chrome/src:/chrome/src
             - ./backend/src/cache:/chrome/cache
-        command:
-            "npm start"
         networks:
             - backend-network
 
