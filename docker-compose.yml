@@ -64,7 +64,6 @@ services:
         env_file:
             - ./.env
         volumes:
-            - ./backend/config/php-fpm.conf:/usr/local/etc/php-fpm.d/www.conf
             - ./backend/logs:/var/log
             - ./backend/src:/backend
         networks:
@@ -125,19 +124,6 @@ services:
             PMA_HOSTS: ${DB_HOST}, ${DB_CLOUD_HOST}
             PMA_PORTS: ${DB_PORT}, ${DB_CLOUD_PORT}
             PMA_VERBOSES: Docker, Cloud
-        networks:
-            - backend-network
-
-    composer:
-        image: composer:latest
-        container_name: revisionary_composer
-        restart: "no"
-        depends_on:
-            - backend
-        volumes:
-            - ./backend/src:/var/www/html
-        working_dir: /var/www/html
-        command: install --ignore-platform-reqs
         networks:
             - backend-network
 
