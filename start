@@ -136,6 +136,14 @@ elif [[ $ACTION == rebuild ]]; then
 	echo "Project rebuilt."
 
 
+	# Backup for Apache
+	# echo "Updating file permissions in server..."
+	# docker-compose exec backend chown -R www-data:www-data /backend
+	# docker-compose exec backend find /backend -type f -exec chmod 644 {} \;
+	# docker-compose exec backend find /backend -type d -exec chmod 755 {} \;
+	# echo "File permissions updated in server"
+
+
 	echo "Checking MySQL to be ready..."
 	while ! docker-compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
 		echo "Waiting for database connection..."

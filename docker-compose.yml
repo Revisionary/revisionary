@@ -64,8 +64,12 @@ services:
         env_file:
             - ./.env
         volumes:
+            - ./backend/src/app:/backend/app
+            - ./backend/src/assets:/backend/assets
+            - ./backend/src/cache:/backend/cache
+            - ./backend/src/index.php:/backend/index.php
+            - ./backend/src/.htaccess:/backend/.htaccess
             - ./backend/logs:/var/log
-            - ./backend/src:/backend
         networks:
             - backend-network
 
