@@ -35,7 +35,7 @@ source .env
 if [[ ! -d proxy ]]; then
 
 	echo "Proxy clonning..."
-	git clone https://github.com/bilaltas/revisionary-proxy.git proxy
+	git clone https://github.com/Revisionary/revisionary-proxy.git proxy
 
 fi
 
@@ -43,7 +43,7 @@ fi
 if [[ ! -d landing ]]; then
 
 	echo "Landing clonning..."
-	git clone https://github.com/bilaltas/revisionary-landing.git landing
+	git clone https://github.com/Revisionary/revisionary-landing.git landing
 
 fi
 
@@ -51,7 +51,7 @@ fi
 if [[ ! -d dashboard ]]; then
 
 	echo "Dashboard clonning..."
-	git clone https://github.com/bilaltas/revisionary-dashboard.git dashboard
+	git clone https://github.com/Revisionary/revisionary-dashboard.git dashboard
 
 fi
 
@@ -59,7 +59,7 @@ fi
 if [[ ! -d backend ]]; then
 
 	echo "Backend clonning..."
-	git clone https://github.com/bilaltas/revisionary-backend.git backend
+	git clone https://github.com/Revisionary/revisionary-backend.git backend
 
 fi
 
@@ -67,7 +67,7 @@ fi
 if [[ ! -d database ]]; then
 
 	echo "Database clonning..."
-	git clone https://github.com/bilaltas/revisionary-database.git database
+	git clone https://github.com/Revisionary/revisionary-database.git database
 
 fi
 
@@ -75,7 +75,7 @@ fi
 if [[ ! -d chrome ]]; then
 
 	echo "Chrome clonning..."
-	git clone https://github.com/bilaltas/revisionary-chrome.git chrome
+	git clone https://github.com/Revisionary/revisionary-chrome.git chrome
 
 fi
 
