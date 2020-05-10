@@ -4,7 +4,7 @@ The new live feedback tool for live websites. You can change any website as you 
 
 ## Deployment
 
--   \$ git clone https://github.com/Revisionary/revisionary-project.git && cd revisionary-project
+-   \$ git clone https://github.com/Revisionary/revisionary.git && cd revisionary-project
 -   \$ bash start
 -   Type 'local' or 'remote' and hit enter.
 
