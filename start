@@ -63,6 +63,14 @@ if [[ ! -d backend ]]; then
 
 fi
 
+# Backend Sources Repo
+if [[ ! -d backend/src ]]; then
+
+	echo "Backend sources clonning..."
+	git clone https://github.com/Revisionary/revisionary-backend-src.git backend
+
+fi
+
 # Database Repo
 if [[ ! -d database ]]; then
 
