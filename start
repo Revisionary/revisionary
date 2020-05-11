@@ -67,7 +67,7 @@ fi
 if [[ ! -d backend/src ]]; then
 
 	echo "Backend sources clonning..."
-	git clone https://github.com/Revisionary/revisionary-backend-src.git backend
+	git clone https://github.com/Revisionary/revisionary-backend-src.git backend/src
 
 fi
 
