@@ -102,7 +102,7 @@ if [[ $ACTION == install ]]; then
 
 
 	echo "Building the project..."
-	docker-compose up -d
+	docker-compose up -d --build
 	echo "Project built."
 
 
@@ -128,6 +128,9 @@ elif [[ $ACTION == pull ]]; then
 
 	echo "Backend:"
 	( cd backend && git pull )
+
+	echo "Backend Source:"
+	( cd backend/src && git pull )
 
 	echo "Database:"
 	( cd database && git pull )
@@ -167,7 +170,7 @@ elif [[ $ACTION == update ]]; then
 	docker-compose stop
 	docker-compose rm -f
 	docker-compose pull
-	docker-compose up -d --build
+	docker-compose up -d --build --force-recreate
 	echo "Server up-to-date."
 
 
@@ -177,20 +180,6 @@ elif [[ $ACTION == update ]]; then
 		sleep 3
 	done
 	echo "Site is ready!"
-
-
-elif [[ $ACTION == reset ]]; then
-
-
-	echo "Closing the server..."
-	docker-compose down
-	echo "Server became down."
-
-
-	echo "Cleaning files..."
-	sh helpers/clean-logs.sh
-	sh helpers/clean-files.sh
-	echo "All the project reset."
 
 
 elif [[ $ACTION == remove-logs ]]; then
@@ -209,6 +198,20 @@ elif [[ $ACTION == remove-logs ]]; then
 	echo "Starting the server..."
 	docker-compose up -d
 	echo "Server has been started."
+
+
+elif [[ $ACTION == reset ]]; then
+
+
+	echo "Closing the server..."
+	docker-compose down
+	echo "Server became down."
+
+
+	echo "Cleaning files..."
+	sh helpers/clean-logs.sh
+	sh helpers/clean-files.sh
+	echo "All the project reset."
 
 
 elif [[ $ACTION == prune ]]; then
