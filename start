@@ -92,7 +92,7 @@ fi
 # Ask the action
 if [[ $ACTION == ask ]]; then
 
-	read -ep "Which do you want to do? (install | pull | rebuild | update | reset | remove-logs | prune | reset-all): " ACTION
+	read -ep "Which do you want to do? (install | pull | restart | rebuild | update | remove-logs | reset | prune | reset-all): " ACTION
 
 fi
 
@@ -104,6 +104,13 @@ if [[ $ACTION == install ]]; then
 	echo "Building the project..."
 	docker-compose up -d --build
 	echo "Project built."
+
+
+	echo "Updating file permissions in server..."
+	docker-compose exec backend chown -R www-data:www-data /backend
+	docker-compose exec backend find /backend -type f -exec chmod 644 {} \;
+	docker-compose exec backend find /backend -type d -exec chmod 755 {} \;
+	echo "File permissions updated in server"
 
 
 	echo "Checking MySQL to be ready..."
@@ -139,6 +146,29 @@ elif [[ $ACTION == pull ]]; then
 	( cd chrome && git pull )
 
 
+elif [[ $ACTION == restart ]]; then
+
+
+	echo "Rebuilding the project..."
+	docker-compose up -d --force-recreate
+	echo "Project rebuilt."
+
+
+	echo "Updating file permissions in server..."
+	docker-compose exec backend chown -R www-data:www-data /backend
+	docker-compose exec backend find /backend -type f -exec chmod 644 {} \;
+	docker-compose exec backend find /backend -type d -exec chmod 755 {} \;
+	echo "File permissions updated in server"
+
+
+	echo "Checking MySQL to be ready..."
+	while ! docker-compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
+		echo "Waiting for database connection..."
+		sleep 3
+	done
+	echo "Site is ready!"
+
+
 elif [[ $ACTION == rebuild ]]; then
 
 
@@ -147,12 +177,11 @@ elif [[ $ACTION == rebuild ]]; then
 	echo "Project rebuilt."
 
 
-	# Backup for Apache
-	# echo "Updating file permissions in server..."
-	# docker-compose exec backend chown -R www-data:www-data /backend
-	# docker-compose exec backend find /backend -type f -exec chmod 644 {} \;
-	# docker-compose exec backend find /backend -type d -exec chmod 755 {} \;
-	# echo "File permissions updated in server"
+	echo "Updating file permissions in server..."
+	docker-compose exec backend chown -R www-data:www-data /backend
+	docker-compose exec backend find /backend -type f -exec chmod 644 {} \;
+	docker-compose exec backend find /backend -type d -exec chmod 755 {} \;
+	echo "File permissions updated in server"
 
 
 	echo "Checking MySQL to be ready..."
@@ -174,6 +203,13 @@ elif [[ $ACTION == update ]]; then
 	echo "Server up-to-date."
 
 
+	echo "Updating file permissions in server..."
+	docker-compose exec backend chown -R www-data:www-data /backend
+	docker-compose exec backend find /backend -type f -exec chmod 644 {} \;
+	docker-compose exec backend find /backend -type d -exec chmod 755 {} \;
+	echo "File permissions updated in server"
+
+
 	echo "Checking MySQL to be ready..."
 	while ! docker-compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
 		echo "Waiting for database connection..."
@@ -185,18 +221,13 @@ elif [[ $ACTION == update ]]; then
 elif [[ $ACTION == remove-logs ]]; then
 
 
-	echo "Closing the server..."
-	docker-compose down
-	echo "Server became down."
-
-
 	echo "Removing the files..."
 	sh helpers/clean-logs.sh
 	echo "Files are removed."
 
 
 	echo "Starting the server..."
-	docker-compose up -d
+	docker-compose up -d --force-recreate
 	echo "Server has been started."
 
 
