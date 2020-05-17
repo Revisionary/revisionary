@@ -124,6 +124,9 @@ if [[ $ACTION == install ]]; then
 elif [[ $ACTION == pull ]]; then
 
 
+	echo "Main Project:"
+	git pull
+
 	echo "Proxy:"
 	( cd proxy && git pull )
 
