@@ -4,6 +4,14 @@
 ACTION=ask
 
 
+# Predefined action
+if [[ ! -z $1 ]]; then
+
+	ACTION=$1
+
+fi
+
+
 
 # Create an .env file and start installation
 if [[ ! -f .env ]]; then
