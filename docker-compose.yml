@@ -74,7 +74,7 @@ services:
     memcached:
         image: memcached:latest
         container_name: revisionary_memcached
-        restart: "on-failure"
+        restart: "always"
         command: ["-m", "512m"]
         networks:
             - backend-network
@@ -82,7 +82,8 @@ services:
     database:
         image: mysql:latest
         container_name: revisionary_database
-        restart: "on-failure"
+        restart: "unless-stopped"
+        #restart: "on-failure"
         command: [
                 "--character-set-server=utf8mb4",
                 "--collation-server=utf8mb4_unicode_ci",
@@ -105,7 +106,7 @@ services:
         build: ./chrome
         user: www-data
         container_name: revisionary_chrome
-        restart: "unless-stopped"
+        restart: "always"
         ports:
             - ${LOCAL_IP}:8080:3000
         volumes:
@@ -117,6 +118,7 @@ services:
     phpmyadmin:
         image: phpmyadmin/phpmyadmin:latest
         container_name: revisionary_phpmyadmin
+        restart: "unless-stopped"
         depends_on:
             - database
         ports:
