@@ -160,9 +160,9 @@ elif [[ $ACTION == pull ]]; then
 elif [[ $ACTION == restart ]]; then
 
 
-	echo "Rebuilding the project..."
+	echo "Recreating the containers..."
 	docker-compose up -d --force-recreate
-	echo "Project rebuilt."
+	echo "Containers recreated."
 
 
 	echo "Updating file permissions in server..."
