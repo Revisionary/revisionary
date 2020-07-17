@@ -206,6 +206,11 @@ elif [[ $ACTION == rebuild ]]; then
 elif [[ $ACTION == update ]]; then
 
 
+	read -ep "This action will stop the server for a moment. Are you sure you want to continue? (yes | no): " confirmation
+	[[ $confirmation != "yes" ]] && exit || sleep 0
+
+
+
 	echo "Updating the server..."
 	docker-compose stop
 	docker-compose rm -f
@@ -232,17 +237,25 @@ elif [[ $ACTION == update ]]; then
 elif [[ $ACTION == remove-logs ]]; then
 
 
-	echo "Removing the files..."
+	read -ep "This action will completely reset the logs. Are you sure you want to continue? (yes | no): " confirmation
+	[[ $confirmation != "yes" ]] && exit || sleep 0
+
+
+	echo "Removing the logs..."
 	sh helpers/clean-logs.sh
-	echo "Files are removed."
+	echo "Logs are removed."
 
 
-	echo "Starting the server..."
+	echo "Restarting the server..."
 	docker-compose up -d --force-recreate
-	echo "Server has been started."
+	echo "Server has been restarted."
 
 
 elif [[ $ACTION == reset ]]; then
+
+
+	read -ep "This action will completely reset the files/logs. And, will stop the server. Are you sure you want to continue? (yes | no): " confirmation
+	[[ $confirmation != "yes" ]] && exit || sleep 0
 
 
 	echo "Closing the server..."
@@ -259,6 +272,10 @@ elif [[ $ACTION == reset ]]; then
 elif [[ $ACTION == prune ]]; then
 
 
+	read -ep "This action will completely reset the Docker. And, will stop the server. Are you sure you want to continue? (yes | no): " confirmation
+	[[ $confirmation != "yes" ]] && exit || sleep 0
+
+
 	echo "Closing the server..."
 	docker-compose down
 	echo "Server became down."
@@ -270,6 +287,10 @@ elif [[ $ACTION == prune ]]; then
 
 
 elif [[ $ACTION == reset-all ]]; then
+
+
+	read -ep "This action will completely reset the Docker, files and logs. And, will stop the server. Are you sure you want to continue? (yes | no): " confirmation
+	[[ $confirmation != "yes" ]] && exit || sleep 0
 
 
 	echo "Closing the server..."
