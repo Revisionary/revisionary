@@ -39,14 +39,6 @@ source .env
 
 
 ## CLONNING THE SERVICES
-# Reverse Proxy Repo
-if [[ ! -d proxy ]]; then
-
-	echo "Proxy clonning..."
-	git clone https://github.com/Revisionary/revisionary-proxy.git proxy
-
-fi
-
 # Landing Page Repo
 if [[ ! -d landing ]]; then
 
@@ -134,9 +126,6 @@ elif [[ $ACTION == pull ]]; then
 
 	echo "Main Project:"
 	git pull
-
-	echo "Proxy:"
-	( cd proxy && git pull )
 
 	echo "Landing:"
 	( cd landing && git pull )

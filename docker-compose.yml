@@ -51,6 +51,7 @@ services:
         environment:
             HOST: 0.0.0.0
             PORT: 3000
+            API_ENDPOINT: ${API_SUBDOMAIN}.${API_DOMAIN}/v1/
 
     backend:
         build: ./backend
