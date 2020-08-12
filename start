@@ -92,7 +92,7 @@ fi
 # Ask the action
 if [[ $ACTION == ask ]]; then
 
-	read -ep "Which do you want to do? (install | pull | restart | rebuild | update | remove-logs | reset | prune | reset-all): " ACTION
+	read -ep "Which do you want to do? (install | pull | recreate | rebuild | update | remove-logs | reset | prune | reset-all): " ACTION
 
 fi
 
@@ -146,7 +146,7 @@ elif [[ $ACTION == pull ]]; then
 	( cd chrome && git pull )
 
 
-elif [[ $ACTION == restart ]]; then
+elif [[ $ACTION == recreate ]]; then
 
 
 	echo "Recreating the containers..."
