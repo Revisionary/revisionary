@@ -154,11 +154,11 @@ elif [[ $ACTION == recreate ]]; then
 	echo "Containers recreated."
 
 
-	echo "Updating file permissions in server..."
-	docker-compose exec backend chown -R www-data:www-data /backend
-	docker-compose exec backend find /backend -type f -exec chmod 644 {} \;
-	docker-compose exec backend find /backend -type d -exec chmod 755 {} \;
-	echo "File permissions updated in server"
+	# echo "Updating file permissions in server..."
+	# docker-compose exec backend chown -R www-data:www-data /backend
+	# docker-compose exec backend find /backend -type f -exec chmod 644 {} \;
+	# docker-compose exec backend find /backend -type d -exec chmod 755 {} \;
+	# echo "File permissions updated in server"
 
 
 	echo "Checking MySQL to be ready..."
