@@ -45,9 +45,10 @@ server {
         index index.html;
         try_files $uri $uri/ =404;
 
-        # sub_filter 'https://${API_SUBDOMAIN}.${API_DOMAIN}/cache/projects/' 'https://${DASHBOARD_SUBDOMAIN}.${DASHBOARD_DOMAIN}/sites/';
-        # sub_filter 'http://${API_SUBDOMAIN}.${API_DOMAIN}/cache/projects/' 'https://${DASHBOARD_SUBDOMAIN}.${DASHBOARD_DOMAIN}/sites/';
+        sub_filter 'dapi.revisionary.co/cache/projects/' 'dapp.revisionary.co/sites/';
+        sub_filter 'new.revisionaryapp.com/cache/projects/' 'dapp.revisionary.co/sites/';
         sub_filter_once off;
+        sub_filter_types *;
     }
 
 
