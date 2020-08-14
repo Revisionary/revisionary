@@ -103,8 +103,8 @@ server {
     ssl_certificate /etc/ssl/private/revisionary.co.crt;
     ssl_certificate_key /etc/ssl/private/revisionary.co.key;
 
-    # server_name ${API_SUBDOMAIN}.${API_DOMAIN} ${API_INSECURE_SUBDOMAIN}.${API_DOMAIN};
-    server_name ${API_SUBDOMAIN}.${API_DOMAIN} www.revisionaryapp.com;
+    server_name ${API_SUBDOMAIN}.${API_DOMAIN} ${API_INSECURE_SUBDOMAIN}.${API_DOMAIN};
+    # server_name ${API_SUBDOMAIN}.${API_DOMAIN} www.revisionaryapp.com;
 
     client_max_body_size 15M;
 
