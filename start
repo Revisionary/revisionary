@@ -173,7 +173,16 @@ elif [[ $ACTION == rebuild ]]; then
 
 
 	echo "Rebuilding the project..."
-	docker-compose up -d --build --force-recreate
+	if [[ $ENV_NAME == remote-dev ]]; then
+
+		echo "Production Mode"
+		docker-compose -f "docker-compose-production.yml" up -d --build --force-recreate
+
+	else
+
+		docker-compose up -d --build --force-recreate
+
+	fi		
 	echo "Project rebuilt."
 
 
