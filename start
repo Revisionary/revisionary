@@ -37,6 +37,23 @@ fi
 source .env
 
 
+function docker_compose {
+
+	if [[ $ENV_NAME == remote-dev ]]; then
+
+		echo "Production Mode"
+		docker-compose -f "docker-compose-production.yml" "$@"
+	
+	else
+
+		echo "Development Mode"
+		docker-compose "$@"
+
+	fi
+
+}
+
+
 
 ## CLONNING THE SERVICES
 # Landing Page Repo
@@ -92,7 +109,7 @@ fi
 # Ask the action
 if [[ $ACTION == ask ]]; then
 
-	read -ep "Which do you want to do? (install | pull | recreate | rebuild | update | remove-logs | reset | prune | reset-all): " ACTION
+	read -ep "Which do you want to do? (install | pull | recreate | rebuild | down | update | remove-logs | reset | prune | reset-all): " ACTION
 
 fi
 
@@ -102,19 +119,19 @@ if [[ $ACTION == install ]]; then
 
 
 	echo "Building the project..."
-	docker-compose up -d --build
+	docker_compose up -d --build
 	echo "Project built."
 
 
 	echo "Updating file permissions in server..."
-	docker-compose exec backend chown -R www-data:www-data /backend
-	docker-compose exec backend find /backend -type f -exec chmod 644 {} \;
-	docker-compose exec backend find /backend -type d -exec chmod 755 {} \;
+	docker_compose exec backend chown -R www-data:www-data /backend
+	docker_compose exec backend find /backend -type f -exec chmod 644 {} \;
+	docker_compose exec backend find /backend -type d -exec chmod 755 {} \;
 	echo "File permissions updated in server"
 
 
 	echo "Checking MySQL to be ready..."
-	while ! docker-compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
+	while ! docker_compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
 		echo "Waiting for database connection..."
 		sleep 3
 	done
@@ -150,19 +167,19 @@ elif [[ $ACTION == recreate ]]; then
 
 
 	echo "Recreating the containers..."
-	docker-compose up -d --force-recreate
+	docker_compose up -d --force-recreate
 	echo "Containers recreated."
 
 
 	# echo "Updating file permissions in server..."
-	# docker-compose exec backend chown -R www-data:www-data /backend
-	# docker-compose exec backend find /backend -type f -exec chmod 644 {} \;
-	# docker-compose exec backend find /backend -type d -exec chmod 755 {} \;
+	# docker_compose exec backend chown -R www-data:www-data /backend
+	# docker_compose exec backend find /backend -type f -exec chmod 644 {} \;
+	# docker_compose exec backend find /backend -type d -exec chmod 755 {} \;
 	# echo "File permissions updated in server"
 
 
 	echo "Checking MySQL to be ready..."
-	while ! docker-compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
+	while ! docker_compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
 		echo "Waiting for database connection..."
 		sleep 3
 	done
@@ -173,32 +190,35 @@ elif [[ $ACTION == rebuild ]]; then
 
 
 	echo "Rebuilding the project..."
-	if [[ $ENV_NAME == remote-dev ]]; then
-
-		echo "Production Mode"
-		docker-compose -f "docker-compose-production.yml" up -d --build --force-recreate
-
-	else
-
-		docker-compose up -d --build --force-recreate
-
-	fi		
+	docker_compose up -d --build --force-recreate
 	echo "Project rebuilt."
 
 
 	echo "Updating file permissions in server..."
-	docker-compose exec backend chown -R www-data:www-data /backend
-	docker-compose exec backend find /backend -type f -exec chmod 644 {} \;
-	docker-compose exec backend find /backend -type d -exec chmod 755 {} \;
+	docker_compose exec backend chown -R www-data:www-data /backend
+	docker_compose exec backend find /backend -type f -exec chmod 644 {} \;
+	docker_compose exec backend find /backend -type d -exec chmod 755 {} \;
 	echo "File permissions updated in server"
 
 
 	echo "Checking MySQL to be ready..."
-	while ! docker-compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
+	while ! docker_compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
 		echo "Waiting for database connection..."
 		sleep 3
 	done
 	echo "Site is ready!"
+
+
+elif [[ $ACTION == down ]]; then
+
+	
+	read -ep "This action will stop the server. Are you sure you want to continue? (yes | no): " confirmation
+	[[ $confirmation != "yes" ]] && exit || sleep 0
+
+
+	echo "Closing the server..."
+	docker_compose down
+	echo "Server became down."
 
 
 elif [[ $ACTION == update ]]; then
@@ -210,22 +230,22 @@ elif [[ $ACTION == update ]]; then
 
 
 	echo "Updating the server..."
-	docker-compose stop
-	docker-compose rm -f
-	docker-compose pull
-	docker-compose up -d --build --force-recreate
+	docker_compose stop
+	docker_compose rm -f
+	docker_compose pull
+	docker_compose up -d --build --force-recreate
 	echo "Server up-to-date."
 
 
 	echo "Updating file permissions in server..."
-	docker-compose exec backend chown -R www-data:www-data /backend
-	docker-compose exec backend find /backend -type f -exec chmod 644 {} \;
-	docker-compose exec backend find /backend -type d -exec chmod 755 {} \;
+	docker_compose exec backend chown -R www-data:www-data /backend
+	docker_compose exec backend find /backend -type f -exec chmod 644 {} \;
+	docker_compose exec backend find /backend -type d -exec chmod 755 {} \;
 	echo "File permissions updated in server"
 
 
 	echo "Checking MySQL to be ready..."
-	while ! docker-compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
+	while ! docker_compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
 		echo "Waiting for database connection..."
 		sleep 3
 	done
@@ -245,7 +265,7 @@ elif [[ $ACTION == remove-logs ]]; then
 
 
 	echo "Restarting the server..."
-	docker-compose up -d --force-recreate
+	docker_compose up -d --force-recreate
 	echo "Server has been restarted."
 
 
@@ -257,7 +277,7 @@ elif [[ $ACTION == reset ]]; then
 
 
 	echo "Closing the server..."
-	docker-compose down
+	docker_compose down
 	echo "Server became down."
 
 
@@ -275,7 +295,7 @@ elif [[ $ACTION == prune ]]; then
 
 
 	echo "Closing the server..."
-	docker-compose down
+	docker_compose down
 	echo "Server became down."
 
 
@@ -292,7 +312,7 @@ elif [[ $ACTION == reset-all ]]; then
 
 
 	echo "Closing the server..."
-	docker-compose down
+	docker_compose down
 	echo "Server became down."
 
 
