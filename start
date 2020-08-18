@@ -130,12 +130,12 @@ if [[ $ACTION == install ]]; then
 	echo "File permissions updated in server"
 
 
-	echo "Checking MySQL to be ready..."
-	while ! docker_compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
-		echo "Waiting for database connection..."
-		sleep 3
-	done
-	echo "Site is ready!"
+	# echo "Checking MySQL to be ready..."
+	# while ! docker_compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
+	# 	echo "Waiting for database connection..."
+	# 	sleep 3
+	# done
+	# echo "Site is ready!"
 
 
 elif [[ $ACTION == pull ]]; then
@@ -178,12 +178,12 @@ elif [[ $ACTION == recreate ]]; then
 	# echo "File permissions updated in server"
 
 
-	echo "Checking MySQL to be ready..."
-	while ! docker_compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
-		echo "Waiting for database connection..."
-		sleep 3
-	done
-	echo "Site is ready!"
+	# echo "Checking MySQL to be ready..."
+	# while ! docker_compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
+	# 	echo "Waiting for database connection..."
+	# 	sleep 3
+	# done
+	# echo "Site is ready!"
 
 
 elif [[ $ACTION == rebuild ]]; then
@@ -201,12 +201,12 @@ elif [[ $ACTION == rebuild ]]; then
 	echo "File permissions updated in server"
 
 
-	echo "Checking MySQL to be ready..."
-	while ! docker_compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
-		echo "Waiting for database connection..."
-		sleep 3
-	done
-	echo "Site is ready!"
+	# echo "Checking MySQL to be ready..."
+	# while ! docker_compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
+	# 	echo "Waiting for database connection..."
+	# 	sleep 3
+	# done
+	# echo "Site is ready!"
 
 
 elif [[ $ACTION == down ]]; then
@@ -244,12 +244,12 @@ elif [[ $ACTION == update ]]; then
 	echo "File permissions updated in server"
 
 
-	echo "Checking MySQL to be ready..."
-	while ! docker_compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
-		echo "Waiting for database connection..."
-		sleep 3
-	done
-	echo "Site is ready!"
+	# echo "Checking MySQL to be ready..."
+	# while ! docker_compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
+	# 	echo "Waiting for database connection..."
+	# 	sleep 3
+	# done
+	# echo "Site is ready!"
 
 
 elif [[ $ACTION == remove-logs ]]; then
