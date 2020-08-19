@@ -44,8 +44,6 @@ services:
             dockerfile: Dockerfile-production
         container_name: revisionary_dashboard
         restart: "always"
-        depends_on:
-            - backend
         volumes:
             - ./dashboard/src:/dashboard/src
         command: "npm run start"
@@ -108,19 +106,6 @@ services:
             PMA_HOSTS: ${DB_HOST}, ${DB_CLOUD_HOST}
             PMA_PORTS: ${DB_PORT}, ${DB_CLOUD_PORT}
             PMA_VERBOSES: Docker, Cloud
-        networks:
-            - backend-network
-
-    memcachedadmin:
-        build: ./memcachedadmin
-        container_name: revisionary_memcachedadmin
-        restart: "unless-stopped"
-        depends_on:
-            - memcached
-        ports:
-            - ${LOCAL_IP}:1200:80
-        volumes:
-            - ./memcachedadmin/Memcache.docker.php:/var/www/localhost/htdocs/Config/Memcache.php
         networks:
             - backend-network
 
