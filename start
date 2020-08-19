@@ -42,12 +42,12 @@ function docker_compose {
 	if [[ $ENV_NAME == remote-dev ]]; then
 
 		echo "Production Mode"
-		docker-compose -f "docker-compose-production.yml" "$@"
+		docker-compose "$@"
 	
 	else
 
 		echo "Development Mode"
-		docker-compose "$@"
+		docker-compose -f "docker-compose-development.yml" "$@"
 
 	fi
 
