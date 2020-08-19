@@ -24,7 +24,9 @@ services:
             - backend-network
 
     landing:
-        build: ./landing
+        build:
+            context: ./landing
+            dockerfile: Dockerfile-production
         container_name: revisionary_landing
         restart: "always"
         volumes:
