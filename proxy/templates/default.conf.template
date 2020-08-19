@@ -45,7 +45,9 @@ server {
         index index.html;
         try_files $uri $uri/ =404;
 
+        sub_filter 'http://dapi.revisionary.co/cache/projects/' 'https://dapp.revisionary.co/sites/';
         sub_filter 'dapi.revisionary.co/cache/projects/' 'dapp.revisionary.co/sites/';
+        sub_filter 'http://new.revisionaryapp.com/cache/projects/' 'https://napp.revisionary.co/sites/';
         sub_filter 'new.revisionaryapp.com/cache/projects/' 'napp.revisionary.co/sites/';
         sub_filter_once off;
         sub_filter_types *;
