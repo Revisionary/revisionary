@@ -189,16 +189,27 @@ elif [[ $ACTION == recreate ]]; then
 elif [[ $ACTION == rebuild ]]; then
 
 
+	# Predefined project to build
 	echo "Rebuilding the project..."
-	docker_compose up -d --build --force-recreate
+	if [[ ! -z $2 ]]; then
+
+		docker_compose up -d --build --force-recreate $2
+
+	else
+
+
+		docker_compose up -d --build --force-recreate
+
+
+		echo "Updating file permissions in server..."
+		docker_compose exec backend chown -R www-data:www-data /backend
+		docker_compose exec backend find /backend -type f -exec chmod 644 {} \;
+		docker_compose exec backend find /backend -type d -exec chmod 755 {} \;
+		echo "File permissions updated in server"
+
+
+	fi
 	echo "Project rebuilt."
-
-
-	echo "Updating file permissions in server..."
-	docker_compose exec backend chown -R www-data:www-data /backend
-	docker_compose exec backend find /backend -type f -exec chmod 644 {} \;
-	docker_compose exec backend find /backend -type d -exec chmod 755 {} \;
-	echo "File permissions updated in server"
 
 
 	# echo "Checking MySQL to be ready..."
