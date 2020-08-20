@@ -39,15 +39,15 @@ source .env
 
 function docker_compose {
 
-	if [[ $ENV_NAME == remote-dev ]]; then
-
-		echo "Production Mode"
-		docker-compose "$@"
-	
-	else
+	if [[ $ENV_NAME == local-dev ]]; then
 
 		echo "Development Mode"
 		docker-compose -f "docker-compose-development.yml" "$@"
+	
+	else
+
+		echo "Production Mode"
+		docker-compose "$@"
 
 	fi
 
@@ -193,7 +193,7 @@ elif [[ $ACTION == rebuild ]]; then
 	echo "Rebuilding the project..."
 	if [[ ! -z $2 ]]; then
 
-		docker_compose up -d --build --force-recreate $2
+		docker_compose up --no-deps -d --build --force-recreate $2
 
 	else
 
@@ -222,9 +222,13 @@ elif [[ $ACTION == rebuild ]]; then
 
 elif [[ $ACTION == down ]]; then
 
+
+	if [[ $ENV_NAME != local-dev ]]; then
+
+		read -ep "This action will stop the server. Are you sure you want to continue? (yes | no): " confirmation
+		[[ $confirmation != "yes" ]] && exit || sleep 0
 	
-	read -ep "This action will stop the server. Are you sure you want to continue? (yes | no): " confirmation
-	[[ $confirmation != "yes" ]] && exit || sleep 0
+	fi
 
 
 	echo "Closing the server..."

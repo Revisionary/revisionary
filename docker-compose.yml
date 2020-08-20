@@ -5,6 +5,10 @@ services:
         image: nginx:latest
         container_name: revisionary_proxy
         restart: "always"
+        depends_on:
+            - landing
+            - backend
+            - dashboard
         env_file:
             - ./.env
         ports:
@@ -40,6 +44,8 @@ services:
             dockerfile: Dockerfile-production
         container_name: revisionary_dashboard
         restart: "always"
+        depends_on:
+            - backend
         volumes:
             - ./dashboard/src:/dashboard/src
         command: "npm run start"
@@ -54,6 +60,8 @@ services:
         build: ./backend
         container_name: revisionary_backend
         restart: "always"
+        depends_on:
+            - memcached
         env_file:
             - ./.env
         volumes:
