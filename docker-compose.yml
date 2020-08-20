@@ -5,10 +5,6 @@ services:
         image: nginx:latest
         container_name: revisionary_proxy
         restart: "always"
-        depends_on:
-            - landing
-            - backend
-            - dashboard
         env_file:
             - ./.env
         ports:
@@ -58,9 +54,6 @@ services:
         build: ./backend
         container_name: revisionary_backend
         restart: "always"
-        depends_on:
-            - memcached
-            - chrome
         env_file:
             - ./.env
         volumes:
