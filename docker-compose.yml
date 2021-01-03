@@ -82,6 +82,28 @@ services:
         networks:
             - backend-network
 
+    database:
+        image: mysql:latest
+        container_name: revisionary_database
+        restart: "unless-stopped"
+        command: [
+            "--character-set-server=utf8mb4",
+            "--collation-server=utf8mb4_unicode_ci",
+            "--slow_query_log=ON", # Make this off when in production !!!
+            "--long_query_time=2",
+            "--slow_query_log_file=/var/lib/mysql/mysql/slow_queries.log",
+        ]
+        environment:
+            MYSQL_DATABASE: ${DB_NAME}
+            MYSQL_USER: ${DB_USER}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+            MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+        volumes:
+            - ./database/dump:/docker-entrypoint-initdb.d
+            - mysql:/var/lib/mysql
+        networks:
+            - backend-network
+
     chrome:
         build: ./chrome
         user: www-data
@@ -115,3 +137,6 @@ networks:
         driver: bridge
     backend-network:
         driver: bridge
+
+volumes:
+    mysql: {}

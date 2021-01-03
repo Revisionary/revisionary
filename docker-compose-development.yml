@@ -97,7 +97,7 @@ services:
             MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
         volumes:
             - ./database/dump:/docker-entrypoint-initdb.d
-            - ./database/mysql:/var/lib/mysql
+            - mysql:/var/lib/mysql
         networks:
             - backend-network
 
@@ -149,3 +149,6 @@ networks:
         driver: bridge
     backend-network:
         driver: bridge
+
+volumes:
+    mysql: {}
