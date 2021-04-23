@@ -150,10 +150,6 @@ if [[ $ACTION == deploy ]]; then
 	bash "$BASEDIR/action" create-certificates $SERVICE
 
 
-	# Pull
-	bash "$BASEDIR/action" pull $SERVICE
-
-
 	# Build
 	bash "$BASEDIR/action" rebuild $SERVICE
 
