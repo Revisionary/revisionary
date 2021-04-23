@@ -129,7 +129,7 @@ fi
 ## FUNCTIONS
 # Docker Compose bundle
 function docker_compose {
-	docker-compose --env-file ".env" -f "docker-compose-${ENV_NAME}.yml" "$@"
+	docker-compose --env-file "${ENV_FILE}" --file "docker-compose-${ENV_NAME}.yml" "$@"
 }
 
 
