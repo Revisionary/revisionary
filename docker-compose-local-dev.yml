@@ -5,10 +5,6 @@ services:
         image: nginx:latest
         container_name: revisionary_proxy
         restart: "always"
-        depends_on:
-            - landing
-            - backend
-            - dashboard
         env_file:
             - ./.env
         ports:
