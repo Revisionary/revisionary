@@ -158,6 +158,10 @@ if [[ $ACTION == deploy ]]; then
 	bash "$BASEDIR/action" restart $SERVICE
 
 
+	# Permission fix
+	bash "$BASEDIR/action" permission-fix $SERVICE
+
+
 
 elif [[ $ACTION == pull ]]; then
 
@@ -200,10 +204,6 @@ elif [[ $ACTION == rebuild ]]; then
 		exit 1
 
 	fi
-
-
-	# Permission fix
-	bash "$BASEDIR/action" permission-fix $SERVICE
 
 
 elif [[ $ACTION == restart ]]; then
