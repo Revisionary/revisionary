@@ -21,6 +21,7 @@ services:
 
     landing:
         build: ./landing
+        image: revisionary_landing:latest
         container_name: revisionary_landing
         restart: "always"
         volumes:
@@ -34,6 +35,7 @@ services:
 
     dashboard:
         build: ./dashboard
+        image: revisionary_dashboard:latest
         container_name: revisionary_dashboard
         restart: "always"
         depends_on:
@@ -50,6 +52,7 @@ services:
 
     backend:
         build: ./backend
+        image: revisionary_backend:latest
         container_name: revisionary_backend
         restart: "always"
         depends_on:
@@ -100,6 +103,7 @@ services:
     chrome:
         build: ./chrome
         user: www-data
+        image: revisionary_chrome:latest
         container_name: revisionary_chrome
         restart: "always"
         ports:
@@ -129,6 +133,7 @@ services:
 
     # memcachedadmin:
     #     build: ./memcachedadmin
+    #     image: revisionary_memcachedadmin:latest
     #     container_name: revisionary_memcachedadmin
     #     restart: "unless-stopped"
     #     depends_on:
