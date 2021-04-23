@@ -6,8 +6,8 @@ server {
     listen 80;
     listen 443 ssl http2;
 
-    ssl_certificate /etc/ssl/private/revisionaryapp.com.crt;
-    ssl_certificate_key /etc/ssl/private/revisionaryapp.com.key;
+    ssl_certificate /etc/ssl/private/_.revisionaryapp.com.crt;
+    ssl_certificate_key /etc/ssl/private/_.revisionaryapp.com.key;
 
     server_name ${LANDING_SUBDOMAIN}.${LANDING_DOMAIN};
 
@@ -23,7 +23,7 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
 
-    
+
 }
 
 
@@ -31,8 +31,8 @@ server {
     listen 80;
     listen 443 ssl http2;
 
-    ssl_certificate /etc/ssl/private/revisionary.co.crt;
-    ssl_certificate_key /etc/ssl/private/revisionary.co.key;
+    ssl_certificate /etc/ssl/private/_.revisionary.co.crt;
+    ssl_certificate_key /etc/ssl/private/_.revisionary.co.key;
 
     server_name ${DASHBOARD_SUBDOMAIN}.${DASHBOARD_DOMAIN};
 
@@ -62,7 +62,7 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
 
-    
+
 }
 
 
@@ -70,8 +70,8 @@ server {
 #     listen 80;
 #     listen 443 ssl http2;
 
-#     ssl_certificate /etc/ssl/private/revisionary.co.crt;
-#     ssl_certificate_key /etc/ssl/private/revisionary.co.key;
+#     ssl_certificate /etc/ssl/private/_.revisionary.co.crt;
+#     ssl_certificate_key /etc/ssl/private/_.revisionary.co.key;
 
 #     server_name proxy.revisionary.co;
 
@@ -94,7 +94,7 @@ server {
 #         proxy_intercept_errors on;
 #         expires 30;
 #     }
-    
+
 # }
 
 
@@ -102,8 +102,8 @@ server {
     listen 80;
     listen 443 ssl http2;
 
-    ssl_certificate /etc/ssl/private/revisionaryapp.com.crt;
-    ssl_certificate_key /etc/ssl/private/revisionaryapp.com.key;
+    ssl_certificate /etc/ssl/private/_.revisionaryapp.com.crt;
+    ssl_certificate_key /etc/ssl/private/_.revisionaryapp.com.key;
 
     server_name www.revisionaryapp.com;
 
@@ -135,7 +135,7 @@ server {
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         fastcgi_param PATH_INFO $fastcgi_path_info;
     }
-    
+
 }
 
 
@@ -143,8 +143,8 @@ server {
     listen 80;
     listen 443 ssl http2;
 
-    ssl_certificate /etc/ssl/private/revisionary.co.crt;
-    ssl_certificate_key /etc/ssl/private/revisionary.co.key;
+    ssl_certificate /etc/ssl/private/_.revisionary.co.crt;
+    ssl_certificate_key /etc/ssl/private/_.revisionary.co.key;
 
     server_name ${API_SUBDOMAIN}.${API_DOMAIN} ${API_INSECURE_SUBDOMAIN}.${API_DOMAIN};
     # server_name ${API_SUBDOMAIN}.${API_DOMAIN} www.revisionaryapp.com;
@@ -178,6 +178,6 @@ server {
         fastcgi_param PATH_INFO $fastcgi_path_info;
     }
 
-    
+
 }
 

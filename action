@@ -133,112 +133,95 @@ function docker_compose {
 }
 
 
+# SPECIFIC SERVICE !!! $SITE to $SERVICE
+SITE=all
+if [[ ! -z $2 ]];then
+	SITE=$2
+fi
+
+
 # ACTIONS
 ACTION=$1
-echo -e "Started action: ${BLUE}$ACTION${RESET} ($ENV_NAME)"
+echo -e "Started $ENV_NAME action: ${BLUE}$ACTION${RESET} ($SITE)"
 if [[ $ACTION == install ]]; then
 
 
-	echo "Building the project..."
-	docker_compose up -d --build
-	echo "Project built."
+	# Create Configs
+	bash "$BASEDIR/action" create-certificates $SITE
 
 
-	echo "Updating file permissions in server..."
-	docker_compose exec backend chown -R www-data:www-data /backend
-	docker_compose exec backend find /backend -type f -exec chmod 644 {} \;
-	docker_compose exec backend find /backend -type d -exec chmod 755 {} \;
-	echo "File permissions updated in server"
+	# Build
+	bash "$BASEDIR/action" rebuild $SITE
 
 
-	# echo "Checking MySQL to be ready..."
-	# while ! docker_compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
-	# 	echo "Waiting for database connection..."
-	# 	sleep 3
-	# done
-	# echo "Site is ready!"
+	# Start
+	bash "$BASEDIR/action" restart $SITE
+
 
 
 elif [[ $ACTION == pull ]]; then
 
 
 	echo "Main Project:"
-	git pull
+	git pull --no-commit --no-rebase
 
 	echo "Landing:"
-	( cd landing && git pull )
+	( cd landing && git pull --no-commit --no-rebase )
 
 	echo "Dashboard:"
-	( cd dashboard && git pull )
+	( cd dashboard && git pull --no-commit --no-rebase )
 
 	echo "Backend:"
-	( cd backend && git pull )
+	( cd backend && git pull --no-commit --no-rebase )
 
 	echo "Backend Source:"
-	( cd backend/src && git pull )
+	( cd backend/src && git pull --no-commit --no-rebase )
 
 	echo "Database:"
-	( cd database && git pull )
+	( cd database && git pull --no-commit --no-rebase )
 
 	echo "Chrome:"
-	( cd chrome && git pull )
+	( cd chrome && git pull --no-commit --no-rebase )
 
 
-elif [[ $ACTION == recreate ]]; then
+elif [[ $ACTION == restart ]]; then
 
 
-	echo "Recreating the containers..."
-	docker_compose up -d --force-recreate
-	echo "Containers recreated."
+	CONTAINERS=""
+	if [[ $SITE != "all" ]];then
+		CONTAINERS="${SITE}"
+	fi
 
 
-	# echo "Updating file permissions in server..."
-	# docker_compose exec backend chown -R www-data:www-data /backend
-	# docker_compose exec backend find /backend -type f -exec chmod 644 {} \;
-	# docker_compose exec backend find /backend -type d -exec chmod 755 {} \;
-	# echo "File permissions updated in server"
+	# Restart
+	if ! docker_compose up -d --force-recreate --remove-orphans --no-deps --renew-anon-volumes $CONTAINERS;then
 
+		echo -e "${RED}Error occured while running the containers.${RESET}"
+		exit 1
 
-	# echo "Checking MySQL to be ready..."
-	# while ! docker_compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
-	# 	echo "Waiting for database connection..."
-	# 	sleep 3
-	# done
-	# echo "Site is ready!"
+	fi
 
 
 elif [[ $ACTION == rebuild ]]; then
 
 
-	# Predefined project to build
-	echo "Rebuilding the project..."
-	if [[ ! -z $2 ]]; then
-
-		docker_compose up --no-deps -d --build --force-recreate $2
-
-	else
+	CONTAINER=""
+	if [[ $SITE != "all" ]];then
+		CONTAINER="${SITE}"
+	fi
 
 
-		docker_compose up -d --build --force-recreate
+	# Rebuild
+	if ! docker_compose build --force-rm $CONTAINER;then
 
-
-		echo "Updating file permissions in server..."
-		docker_compose exec backend chown -R www-data:www-data /backend
-		docker_compose exec backend find /backend -type f -exec chmod 644 {} \;
-		docker_compose exec backend find /backend -type d -exec chmod 755 {} \;
-		echo "File permissions updated in server"
-
+		echo -e "${RED}Error occured while running the containers.${RESET}"
+		exit 1
 
 	fi
-	echo "Project rebuilt."
 
 
-	# echo "Checking MySQL to be ready..."
-	# while ! docker_compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
-	# 	echo "Waiting for database connection..."
-	# 	sleep 3
-	# done
-	# echo "Site is ready!"
+	# Permission fix
+	bash "$BASEDIR/action" permission-fix $SITE
 
 
 elif [[ $ACTION == down ]]; then
@@ -248,12 +231,12 @@ elif [[ $ACTION == down ]]; then
 
 		read -ep "This action will stop the server. Are you sure you want to continue? (yes | no): " confirmation
 		[[ $confirmation != "yes" ]] && exit || sleep 0
-	
+
 	fi
 
 
 	echo "Closing the server..."
-	docker_compose down
+	docker_compose down --volumes --remove-orphans
 	echo "Server became down."
 
 
@@ -313,7 +296,7 @@ elif [[ $ACTION == reset ]]; then
 
 
 	echo "Closing the server..."
-	docker_compose down
+	docker_compose down --volumes --remove-orphans
 	echo "Server became down."
 
 
@@ -323,7 +306,7 @@ elif [[ $ACTION == reset ]]; then
 	echo "All the project reset."
 
 
-elif [[ $ACTION == prune ]]; then
+elif [[ $ACTION == reset-docker ]]; then
 
 
 	read -ep "This action will completely reset the Docker. And, will stop the server. Are you sure you want to continue? (yes | no): " confirmation
@@ -331,13 +314,24 @@ elif [[ $ACTION == prune ]]; then
 
 
 	echo "Closing the server..."
-	docker_compose down
+	docker_compose down --volumes --remove-orphans
 	echo "Server became down."
 
 
-	echo "Pruning the docker..."
-	sh helpers/clean-docker.sh
-	echo "Docker reset."
+
+
+	# Cleanup the other volumes and images
+	if ! docker system prune --all --volumes -f;then # All with Build Cache
+
+		echo -e "${RED}Error occured resetting docker.${RESET}"
+
+	fi
+
+	# # Or one by one:
+	# docker container prune -f
+	# docker network prune -f
+	# docker volume prune -f
+	# docker image prune --all -f
 
 
 elif [[ $ACTION == reset-all ]]; then
@@ -348,7 +342,7 @@ elif [[ $ACTION == reset-all ]]; then
 
 
 	echo "Closing the server..."
-	docker_compose down
+	docker_compose down --volumes --remove-orphans
 	echo "Server became down."
 
 
@@ -357,6 +351,57 @@ elif [[ $ACTION == reset-all ]]; then
 	sh helpers/clean-files.sh
 	sh helpers/clean-docker.sh
 	echo "All the project and Docker reset."
+
+
+elif [[ $ACTION == permission-fix ]]; then
+
+
+	echo "Updating file permissions in server..."
+	docker_compose exec backend chown -R www-data:www-data /backend
+	docker_compose exec backend find /backend -type f -exec chmod 644 {} \;
+	docker_compose exec backend find /backend -type d -exec chmod 755 {} \;
+	echo "File permissions updated in server"
+
+
+elif [[ $ACTION == create-certificates ]]; then
+
+
+	# RevisionaryApp.com Certificates
+	if [[ ! -f "$BASEDIR/proxy/certificates/_.revisionaryapp.com.crt" ]] || [[ ! -f "$BASEDIR/proxy/certificates/_.revisionaryapp.com.key" ]];then
+
+		printf "Creating the self-signed *.revisionaryapp.com certificates ..."
+		docker_compose run --rm proxy bash -c "
+			openssl req -x509 -out /etc/ssl/private/_.revisionaryapp.com.crt -keyout /etc/ssl/private/_.revisionaryapp.com.key \
+			-newkey rsa:2048 -nodes -sha256 \
+			-subj '/CN=*.revisionaryapp.com' -extensions EXT -config <( \
+			printf '[dn]\nCN=*.revisionaryapp.com\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:*.revisionaryapp.com\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth')
+		"
+		echo -e " ${GREEN}done${RESET}"
+
+	else
+
+		echo -e " ${BLUE}Cetificate already exists for 'revisionary.co'${RESET}"
+
+	fi
+
+
+	# Revisionary.co Certificates
+	if [[ ! -f "$BASEDIR/proxy/certificates/_.revisionary.co.crt" ]] || [[ ! -f "$BASEDIR/proxy/certificates/_.revisionary.co.key" ]];then
+
+		printf "Creating the self-signed *.revisionary.co certificates ..."
+		docker_compose run --rm proxy bash -c "
+			openssl req -x509 -out /etc/ssl/private/_.revisionary.co.crt -keyout /etc/ssl/private/_.revisionary.co.key \
+			-newkey rsa:2048 -nodes -sha256 \
+			-subj '/CN=*.revisionary.co' -extensions EXT -config <( \
+			printf '[dn]\nCN=*.revisionary.co\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:*.revisionary.co\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth')
+		"
+		echo -e " ${GREEN}done${RESET}"
+
+	else
+
+		echo -e " ${BLUE}Cetificate already exists for 'revisionaryapp.com'${RESET}"
+
+	fi
 
 
 else

@@ -5,3 +5,7 @@
 /database
 /landing
 .DS_Store
+
+# Certificates
+proxy/certificates/*
+!proxy/certificates/.gitkeep
