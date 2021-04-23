@@ -5,15 +5,14 @@ The new live feedback tool for live websites. You can change any website as you 
 ## Deployment
 
 -   \$ git clone https://github.com/Revisionary/revisionary.git && cd revisionary
--   \$ bash start
--   Type 'local' or 'remote' and hit enter.
+-   \$ bash action install
 
 ## Local Domains for /etc/hosts file
 
--   127.0.0.1 dev.revisionaryapp.com
--   127.0.0.1 dapp.revisionary.co
--   127.0.0.1 dapi.revisionary.co
+-   127.0.0.1 dww.revisionaryapp.com # Landing
+-   127.0.0.1 dpp.revisionary.co # Dashboard
+-   127.0.0.1 dpi.revisionary.co # API
 
 ## Note
 
-Don't forget to update .env file (SMTP credentials, etc.) and restart.
+Don't forget to update .env file (SMTP credentials, etc.) and "bash action restart".
