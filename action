@@ -361,7 +361,7 @@ elif [[ $ACTION == create-certificates ]]; then
 	if [[ ! -f "$BASEDIR/proxy/certificates/_.revisionaryapp.com.crt" ]] || [[ ! -f "$BASEDIR/proxy/certificates/_.revisionaryapp.com.key" ]];then
 
 		printf "Creating the self-signed *.revisionaryapp.com certificates ..."
-		docker_compose run --rm proxy bash -c "
+		docker_compose run --rm --no-deps proxy bash -c "
 			openssl req -x509 -out /etc/ssl/private/_.revisionaryapp.com.crt -keyout /etc/ssl/private/_.revisionaryapp.com.key \
 			-newkey rsa:2048 -nodes -sha256 \
 			-subj '/CN=*.revisionaryapp.com' -extensions EXT -config <( \
@@ -380,7 +380,7 @@ elif [[ $ACTION == create-certificates ]]; then
 	if [[ ! -f "$BASEDIR/proxy/certificates/_.revisionary.co.crt" ]] || [[ ! -f "$BASEDIR/proxy/certificates/_.revisionary.co.key" ]];then
 
 		printf "Creating the self-signed *.revisionary.co certificates ..."
-		docker_compose run --rm proxy bash -c "
+		docker_compose run --rm --no-deps proxy bash -c "
 			openssl req -x509 -out /etc/ssl/private/_.revisionary.co.crt -keyout /etc/ssl/private/_.revisionary.co.key \
 			-newkey rsa:2048 -nodes -sha256 \
 			-subj '/CN=*.revisionary.co' -extensions EXT -config <( \
