@@ -1,57 +1,76 @@
 #!/bin/bash
 
 
-ACTION=ask
+## BUILDER DIRECTORY
+BASEDIR="`dirname "$0"`"
+# echo -e "BASEDIR: $BASEDIR"
 
 
-# Predefined action
-if [[ ! -z $1 ]]; then
+## COLORS
+GREEN='\033[1;32m' # Green
+BLUE='\033[1;34m' # Blue
+RED='\033[1;31m' # Red
+RESET='\033[0m' # No Color
+# echo -e "${RED}Green${RESET} - ${BLUE}Blue${RESET} - ${RED}Red${RESET}"
 
-	ACTION=$1
 
+## FIND CURRENT OS
+OS="Unknown"
+ENVIRONMENT=staging
+if [[ "$OSTYPE" == "linux-gnu" ]];then
+	OS="Linux"
+	ENVIRONMENT=remote
+elif [[ "$OSTYPE" == "darwin"* ]];then
+	OS="MacOS"
+	ENVIRONMENT=local
+elif [[ "$OSTYPE" == "cygwin" ]];then
+	# POSIX compatibility layer and Linux environment emulation for Windows
+	OS="cygwin"
+	ENVIRONMENT=remote
+elif [[ "$OSTYPE" == "msys" ]];then
+	# Lightweight shell and GNU utilities compiled for Windows (part of MinGW)
+	OS="msys"
+	ENVIRONMENT=local
+elif [[ "$OSTYPE" == "win32" ]];then
+	OS="Win32"
+	ENVIRONMENT=local
+elif [[ "$OSTYPE" == "freebsd"* ]];then
+	OS="FreeBSD"
+	ENVIRONMENT=remote
 fi
+#echo "Operating System: ${OS}"
 
 
+## ENVIRONMENT VARIABLES
+ENV_FILE="$BASEDIR/.env"
 
-# Create an .env file and start installation
-if [[ ! -f .env ]]; then
+# If environment file doesn't exist, try using sample file
+if [[ ! -f $ENV_FILE ]];then
 
-	read -ep "Which environment are you installing on? (local | remote): " ENV
-	if [[ $ENV == remote ]]; then
+	# If sample environment file also doesn't exist, exit
+	if [[ -f "${ENV_FILE}.${ENVIRONMENT}" ]];then
 
-		cp .env.remote .env
-
-	else
-
-		cp .env.local .env
+		# Copy from the sample
+		cp "${ENV_FILE}.${ENVIRONMENT}" "$ENV_FILE"
 
 	fi
 
-	ACTION=install
+fi
+
+# Include it
+source $ENV_FILE
+
+
+# CHECK DOCKER WHETHER OR NOT RUNNING
+rep=$(docker ps -q &>/dev/null)
+status=$?
+if [[ "$status" != "0" ]];then
+
+	echo -e "${BLUE}Docker engine is not running. Please open the docker and wait until it starts.${RESET}"
+	exit 1
 
 fi
 
-
-
-# Get data from .env file
-source .env
-
-
-function docker_compose {
-
-	if [[ $ENV_NAME == local-dev ]]; then
-
-		echo "Development Mode"
-		docker-compose -f "docker-compose-development.yml" "$@"
-	
-	else
-
-		echo "Production Mode"
-		docker-compose -f "docker-compose-production.yml" "$@"
-
-	fi
-
-}
 
 
 
@@ -106,15 +125,17 @@ fi
 
 
 
-# Ask the action
-if [[ $ACTION == ask ]]; then
 
-	read -ep "Which do you want to do? (install | pull | recreate | rebuild | down | update | remove-logs | reset | prune | reset-all): " ACTION
+## FUNCTIONS
+# Docker Compose bundle
+function docker_compose {
+	docker-compose --env-file ".env" -f "docker-compose-${ENV_NAME}.yml" "$@"
+}
 
-fi
 
-
-
+# ACTIONS
+ACTION=$1
+echo -e "Started action: ${BLUE}$ACTION${RESET} ($ENV_NAME)"
 if [[ $ACTION == install ]]; then
 
 
@@ -337,5 +358,14 @@ elif [[ $ACTION == reset-all ]]; then
 	sh helpers/clean-docker.sh
 	echo "All the project and Docker reset."
 
+
+else
+
+
+	if [[ -z $ACTION ]];then
+		echo -e "${BLUE}Available actions:${RESET} install | pull | recreate | rebuild | down | update | remove-logs | reset | prune | reset-all"
+	else
+		echo -e "${BLUE}Skipped:${RESET} This action is not allowed on '$ENV_NAME' environment."
+	fi
 
 fi

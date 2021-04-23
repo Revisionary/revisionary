@@ -131,18 +131,18 @@ services:
         networks:
             - backend-network
 
-    memcachedadmin:
-        build: ./memcachedadmin
-        container_name: revisionary_memcachedadmin
-        restart: "unless-stopped"
-        depends_on:
-            - memcached
-        ports:
-            - ${LOCAL_IP}:1200:80
-        volumes:
-            - ./memcachedadmin/Memcache.docker.php:/var/www/localhost/htdocs/Config/Memcache.php
-        networks:
-            - backend-network
+    # memcachedadmin:
+    #     build: ./memcachedadmin
+    #     container_name: revisionary_memcachedadmin
+    #     restart: "unless-stopped"
+    #     depends_on:
+    #         - memcached
+    #     ports:
+    #         - ${LOCAL_IP}:1200:80
+    #     volumes:
+    #         - ./memcachedadmin/Memcache.docker.php:/var/www/localhost/htdocs/Config/Memcache.php
+    #     networks:
+    #         - backend-network
 
 networks:
     proxy-network:
