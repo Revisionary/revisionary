@@ -47,7 +47,7 @@ function docker_compose {
 	else
 
 		echo "Production Mode"
-		docker-compose "$@"
+		docker-compose -f "docker-compose-production.yml" "$@"
 
 	fi
 

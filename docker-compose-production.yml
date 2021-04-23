@@ -24,12 +24,14 @@ services:
             - backend-network
 
     landing:
-        build: ./landing
+        build:
+            context: ./landing
+            dockerfile: Dockerfile-production
         container_name: revisionary_landing
         restart: "always"
         volumes:
             - ./landing/src:/landing/src
-        command: "npm run dev"
+        command: "npm run start"
         networks:
             - proxy-network
         environment:
@@ -37,14 +39,16 @@ services:
             PORT: 3030
 
     dashboard:
-        build: ./dashboard
+        build:
+            context: ./dashboard
+            dockerfile: Dockerfile-production
         container_name: revisionary_dashboard
         restart: "always"
         depends_on:
             - backend
         volumes:
             - ./dashboard/src:/dashboard/src
-        command: "npm run dev"
+        command: "npm run start"
         networks:
             - backend-network
         environment:
@@ -58,7 +62,6 @@ services:
         restart: "always"
         depends_on:
             - memcached
-            - database
         env_file:
             - ./.env
         volumes:
@@ -118,8 +121,6 @@ services:
         image: phpmyadmin/phpmyadmin:latest
         container_name: revisionary_phpmyadmin
         restart: "unless-stopped"
-        depends_on:
-            - database
         ports:
             - ${LOCAL_IP}:8000:80
         volumes:
@@ -128,19 +129,6 @@ services:
             PMA_HOSTS: ${DB_HOST}, ${DB_CLOUD_HOST}
             PMA_PORTS: ${DB_PORT}, ${DB_CLOUD_PORT}
             PMA_VERBOSES: Docker, Cloud
-        networks:
-            - backend-network
-
-    memcachedadmin:
-        build: ./memcachedadmin
-        container_name: revisionary_memcachedadmin
-        restart: "unless-stopped"
-        depends_on:
-            - memcached
-        ports:
-            - ${LOCAL_IP}:1200:80
-        volumes:
-            - ./memcachedadmin/Memcache.docker.php:/var/www/localhost/htdocs/Config/Memcache.php
         networks:
             - backend-network
 
