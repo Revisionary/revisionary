@@ -133,29 +133,33 @@ function docker_compose {
 }
 
 
-# SPECIFIC SERVICE !!! $SITE to $SERVICE
-SITE=all
+# SPECIFIC SERVICE !!! $SERVICE to $SERVICE
+SERVICE=all
 if [[ ! -z $2 ]];then
-	SITE=$2
+	SERVICE=$2
 fi
 
 
 # ACTIONS
 ACTION=$1
-echo -e "Started $ENV_NAME action: ${BLUE}$ACTION${RESET} ($SITE)"
-if [[ $ACTION == install ]]; then
+echo -e "Started $ENV_NAME action: ${BLUE}$ACTION${RESET} ($SERVICE)"
+if [[ $ACTION == deploy ]]; then
 
 
-	# Create Configs
-	bash "$BASEDIR/action" create-certificates $SITE
+	# Create Certificates
+	bash "$BASEDIR/action" create-certificates $SERVICE
+
+
+	# Pull
+	bash "$BASEDIR/action" pull $SERVICE
 
 
 	# Build
-	bash "$BASEDIR/action" rebuild $SITE
+	bash "$BASEDIR/action" rebuild $SERVICE
 
 
 	# Start
-	bash "$BASEDIR/action" restart $SITE
+	bash "$BASEDIR/action" restart $SERVICE
 
 
 
@@ -184,30 +188,12 @@ elif [[ $ACTION == pull ]]; then
 	( cd chrome && git pull --no-commit --no-rebase )
 
 
-elif [[ $ACTION == restart ]]; then
-
-
-	CONTAINERS=""
-	if [[ $SITE != "all" ]];then
-		CONTAINERS="${SITE}"
-	fi
-
-
-	# Restart
-	if ! docker_compose up -d --force-recreate --remove-orphans --no-deps --renew-anon-volumes $CONTAINERS;then
-
-		echo -e "${RED}Error occured while running the containers.${RESET}"
-		exit 1
-
-	fi
-
-
 elif [[ $ACTION == rebuild ]]; then
 
 
 	CONTAINER=""
-	if [[ $SITE != "all" ]];then
-		CONTAINER="${SITE}"
+	if [[ $SERVICE != "all" ]];then
+		CONTAINER=$SERVICE
 	fi
 
 
@@ -221,31 +207,47 @@ elif [[ $ACTION == rebuild ]]; then
 
 
 	# Permission fix
-	bash "$BASEDIR/action" permission-fix $SITE
+	bash "$BASEDIR/action" permission-fix $SERVICE
 
 
-elif [[ $ACTION == down ]]; then
+elif [[ $ACTION == restart ]]; then
 
 
-	if [[ $ENV_NAME != local-dev ]]; then
+	CONTAINERS=""
+	if [[ $SERVICE != "all" ]];then
+		CONTAINERS=$SERVICE
+	fi
 
-		read -ep "This action will stop the server. Are you sure you want to continue? (yes | no): " confirmation
-		[[ $confirmation != "yes" ]] && exit || sleep 0
+
+	# Restart
+	if ! docker_compose up -d --force-recreate --remove-orphans --no-deps --renew-anon-volumes $CONTAINERS;then
+
+		echo -e "${RED}Error occured while running the containers.${RESET}"
+		exit 1
 
 	fi
 
 
-	echo "Closing the server..."
-	docker_compose down --volumes --remove-orphans
-	echo "Server became down."
+elif [[ $ACTION == uninstall ]]; then
 
 
-elif [[ $ACTION == update ]]; then
+	read -ep "This action will stop the server. Are you sure you want to continue? (yes | no): " confirmation
+	[[ $confirmation != "yes" ]] && exit || sleep 0
+
+
+	# Uninstall
+	if ! docker_compose down --volumes --remove-orphans;then
+
+		echo -e "${RED}Error occured while uninstalling.${RESET}"
+
+	fi
+
+
+elif [[ $ACTION == update-images ]]; then
 
 
 	read -ep "This action will stop the server for a moment. Are you sure you want to continue? (yes | no): " confirmation
 	[[ $confirmation != "yes" ]] && exit || sleep 0
-
 
 
 	echo "Updating the server..."
@@ -256,68 +258,68 @@ elif [[ $ACTION == update ]]; then
 	echo "Server up-to-date."
 
 
-	echo "Updating file permissions in server..."
-	docker_compose exec backend chown -R www-data:www-data /backend
-	docker_compose exec backend find /backend -type f -exec chmod 644 {} \;
-	docker_compose exec backend find /backend -type d -exec chmod 755 {} \;
-	echo "File permissions updated in server"
+	# Permission fix
+	bash "$BASEDIR/action" permission-fix $SERVICE
 
 
-	# echo "Checking MySQL to be ready..."
-	# while ! docker_compose exec database mysqladmin --user=${DB_USER} --password=${DB_ROOT_PASSWORD} --host "${LOCAL_IP}" ping --silent &> /dev/null ; do
-	# 	echo "Waiting for database connection..."
-	# 	sleep 3
-	# done
-	# echo "Site is ready!"
+elif [[ $ACTION == reset-repos ]]; then
 
 
-elif [[ $ACTION == remove-logs ]]; then
+	if [[ $SERVICE == "landing" ]] || [[ $SERVICE == "all" ]];then
+
+		printf "Resetting the landing/ folder ..."
+		( cd "$BASEDIR/landing/" && git reset --hard --quiet && git clean -dfx --quiet && git pull --no-commit --no-rebase --quiet )
+		echo -e " ${GREEN}done${RESET}"
+
+	fi
 
 
-	read -ep "This action will completely reset the logs. Are you sure you want to continue? (yes | no): " confirmation
-	[[ $confirmation != "yes" ]] && exit || sleep 0
+	if [[ $SERVICE == "dashboard" ]] || [[ $SERVICE == "all" ]];then
+
+		printf "Resetting the dashboard/ folder ..."
+		( cd "$BASEDIR/dashboard/" && git reset --hard --quiet && git clean -dfx --quiet && git pull --no-commit --no-rebase --quiet )
+		echo -e " ${GREEN}done${RESET}"
+
+	fi
 
 
-	echo "Removing the logs..."
-	sh helpers/clean-logs.sh
-	echo "Logs are removed."
+	if [[ $SERVICE == "backend" ]] || [[ $SERVICE == "all" ]];then
+
+		printf "Resetting the backend/ folder ..."
+		( cd "$BASEDIR/backend/" && git reset --hard --quiet && git clean -dfx --quiet && git pull --no-commit --no-rebase --quiet )
+		echo -e " ${GREEN}done${RESET}"
+
+	fi
 
 
-	echo "Restarting the server..."
-	docker_compose up -d --force-recreate
-	echo "Server has been restarted."
+	if [[ $SERVICE == "backend/src" ]] || [[ $SERVICE == "all" ]];then
+
+		printf "Resetting the backend/src/ folder ..."
+		( cd "$BASEDIR/backend/src/" && git reset --hard --quiet && git clean -dfx --quiet && git pull --no-commit --no-rebase --quiet )
+		echo -e " ${GREEN}done${RESET}"
+
+	fi
 
 
-elif [[ $ACTION == reset ]]; then
+	if [[ $SERVICE == "database" ]] || [[ $SERVICE == "all" ]];then
+
+		printf "Resetting the database/ folder ..."
+		( cd "$BASEDIR/database/" && git reset --hard --quiet && git clean -dfx --quiet && git pull --no-commit --no-rebase --quiet )
+		echo -e " ${GREEN}done${RESET}"
+
+	fi
 
 
-	read -ep "This action will completely reset the files/logs. And, will stop the server. Are you sure you want to continue? (yes | no): " confirmation
-	[[ $confirmation != "yes" ]] && exit || sleep 0
+	if [[ $SERVICE == "chrome" ]] || [[ $SERVICE == "all" ]];then
 
+		printf "Resetting the chrome/ folder ..."
+		( cd "$BASEDIR/chrome/" && git reset --hard --quiet && git clean -dfx --quiet && git pull --no-commit --no-rebase --quiet )
+		echo -e " ${GREEN}done${RESET}"
 
-	echo "Closing the server..."
-	docker_compose down --volumes --remove-orphans
-	echo "Server became down."
-
-
-	echo "Cleaning files..."
-	sh helpers/clean-logs.sh
-	sh helpers/clean-files.sh
-	echo "All the project reset."
+	fi
 
 
 elif [[ $ACTION == reset-docker ]]; then
-
-
-	read -ep "This action will completely reset the Docker. And, will stop the server. Are you sure you want to continue? (yes | no): " confirmation
-	[[ $confirmation != "yes" ]] && exit || sleep 0
-
-
-	echo "Closing the server..."
-	docker_compose down --volumes --remove-orphans
-	echo "Server became down."
-
-
 
 
 	# Cleanup the other volumes and images
@@ -337,20 +339,9 @@ elif [[ $ACTION == reset-docker ]]; then
 elif [[ $ACTION == reset-all ]]; then
 
 
-	read -ep "This action will completely reset the Docker, files and logs. And, will stop the server. Are you sure you want to continue? (yes | no): " confirmation
-	[[ $confirmation != "yes" ]] && exit || sleep 0
-
-
-	echo "Closing the server..."
-	docker_compose down --volumes --remove-orphans
-	echo "Server became down."
-
-
-	echo "Resetting all..."
-	sh helpers/clean-logs.sh
-	sh helpers/clean-files.sh
-	sh helpers/clean-docker.sh
-	echo "All the project and Docker reset."
+	bash "$BASEDIR/action" uninstall
+	bash "$BASEDIR/action" reset-docker
+	bash "$BASEDIR/action" reset-repos
 
 
 elif [[ $ACTION == permission-fix ]]; then
@@ -408,7 +399,7 @@ else
 
 
 	if [[ -z $ACTION ]];then
-		echo -e "${BLUE}Available actions:${RESET} install | pull | recreate | rebuild | down | update | remove-logs | reset | prune | reset-all"
+		echo -e "${BLUE}Available actions:${RESET} deploy | pull | rebuild | uninstall | update-images | reset-repos | reset-docker | reset-all | permission-fix | create-certificates"
 	else
 		echo -e "${BLUE}Skipped:${RESET} This action is not allowed on '$ENV_NAME' environment."
 	fi
