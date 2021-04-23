@@ -395,11 +395,18 @@ elif [[ $ACTION == create-certificates ]]; then
 	fi
 
 
+elif [[ $ACTION == docker-compose ]];then
+
+
+	set -- "${@:2}"
+	docker_compose "$@"
+
+
 else
 
 
 	if [[ -z $ACTION ]];then
-		echo -e "${BLUE}Available actions:${RESET} deploy | pull | rebuild | uninstall | update-images | reset-repos | reset-docker | reset-all | permission-fix | create-certificates"
+		echo -e "${BLUE}Available actions:${RESET} deploy | pull | rebuild | uninstall | update-images | reset-repos | reset-docker | reset-all | permission-fix | create-certificates | docker-compose"
 	else
 		echo -e "${BLUE}Skipped:${RESET} This action is not allowed on '$ENV_NAME' environment."
 	fi
