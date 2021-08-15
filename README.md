@@ -5,7 +5,7 @@ The new live feedback tool for live websites. You can change any website as you 
 ## Deployment
 
 -   \$ git clone https://github.com/Revisionary/revisionary.git && cd revisionary
--   \$ bash action install
+-   \$ bash action restart
 
 ## Local Domains for /etc/hosts file
 
