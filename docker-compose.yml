@@ -142,12 +142,12 @@ services:
     #     container_name: revisionary_chrome
     #     restart: "always"
     #     ports:
-    #         - ${LOCAL_IP}:8080:3000
+    #         - 8080:3000
     #     volumes:
     #         - ./chrome/src:/chrome/src
     #         - ./backend/src/cache:/chrome/cache
-    #     networks:
-    #         - backend-network
+    #     # networks:
+    #     #     - backend-network
 
     # phpmyadmin:
     #     image: phpmyadmin/phpmyadmin:latest
