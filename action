@@ -107,14 +107,6 @@ if [[ ! -d backend/src ]]; then
 
 fi
 
-# Database Repo
-if [[ ! -d database ]]; then
-
-	echo "Database clonning..."
-	git clone https://github.com/Revisionary/revisionary-database.git database
-
-fi
-
 # Chrome Repo
 if [[ ! -d chrome ]]; then
 
@@ -180,9 +172,6 @@ elif [[ $ACTION == pull ]]; then
 
 	echo "Backend Source:"
 	( cd backend/src && git pull --no-commit --no-rebase )
-
-	echo "Database:"
-	( cd database && git pull --no-commit --no-rebase )
 
 	echo "Chrome:"
 	( cd chrome && git pull --no-commit --no-rebase )
@@ -292,15 +281,6 @@ elif [[ $ACTION == reset-repos ]]; then
 
 		printf "Resetting the backend/src/ folder ..."
 		( cd "$BASEDIR/backend/src/" && git reset --hard --quiet && git clean -dfx --quiet && git pull --no-commit --no-rebase --quiet )
-		echo -e " ${GREEN}done${RESET}"
-
-	fi
-
-
-	if [[ $SERVICE == "database" ]] || [[ $SERVICE == "all" ]];then
-
-		printf "Resetting the database/ folder ..."
-		( cd "$BASEDIR/database/" && git reset --hard --quiet && git clean -dfx --quiet && git pull --no-commit --no-rebase --quiet )
 		echo -e " ${GREEN}done${RESET}"
 
 	fi
