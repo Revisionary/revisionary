@@ -1,0 +1,56 @@
+server {
+    listen 80;
+    listen 443 ssl http2;
+
+    ssl_certificate /etc/nginx/certificates/_.${API_DOMAIN}.crt;
+    ssl_certificate_key /etc/nginx/certificates/_.${API_DOMAIN}.key;
+
+    server_name ${API_SUBDOMAIN}.${API_DOMAIN};
+
+    error_log  /var/log/nginx/api_error.log;
+    access_log /var/log/nginx/api_access.log;
+
+
+    location / {
+		proxy_pass http://backend;
+		include common/proxy.conf;
+    }
+
+
+}
+
+
+# server {
+#     listen 80;
+#     listen 443 ssl http2;
+
+#     ssl_certificate /etc/ssl/private/_.revisionary.co.crt;
+#     ssl_certificate_key /etc/ssl/private/_.revisionary.co.key;
+
+#     server_name ${DASHBOARD_SUBDOMAIN}.${DASHBOARD_DOMAIN};
+
+#     error_log  /var/log/nginx/dashboard_error.log;
+#     access_log /var/log/nginx/dashboard_access.log;
+
+
+#     location /sites {
+#         alias /backend/cache/projects;
+#         index index.html;
+#         try_files $uri $uri/ =404;
+
+#         sub_filter 'http://dapi.revisionary.co/cache/projects/' 'https://dapp.revisionary.co/sites/';
+#         sub_filter 'dapi.revisionary.co/cache/projects/' 'dapp.revisionary.co/sites/';
+#         sub_filter 'http://new.revisionaryapp.com/cache/projects/' 'https://napp.revisionary.co/sites/';
+#         sub_filter 'new.revisionaryapp.com/cache/projects/' 'napp.revisionary.co/sites/';
+#         sub_filter_once off;
+#         sub_filter_types *;
+#     }
+
+
+#     location / {
+#         proxy_pass http://dashboard:3000;
+# 		include common/proxy.conf;
+#     }
+
+
+# }
