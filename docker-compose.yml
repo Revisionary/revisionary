@@ -118,18 +118,18 @@ services:
     #         PORT: 3000
     #         API_ENDPOINT: https://${API_SUBDOMAIN}.${API_DOMAIN}/v1/
 
-    phpmyadmin:
-        image: phpmyadmin/phpmyadmin:latest
-        container_name: revisionary_phpmyadmin
-        restart: "unless-stopped"
-        ports:
-            - 8000:80
-        environment:
-            PMA_HOSTS: ${DB_HOST}, ${DB_CLOUD_HOST}
-            PMA_PORTS: ${DB_PORT}, ${DB_CLOUD_PORT}
-            PMA_VERBOSES: Docker, Cloud
-        networks:
-            - backend-network
+    # phpmyadmin:
+    #     image: phpmyadmin/phpmyadmin:latest
+    #     container_name: revisionary_phpmyadmin
+    #     restart: "unless-stopped"
+    #     ports:
+    #         - 8000:80
+    #     environment:
+    #         PMA_HOSTS: ${DB_HOST}, ${DB_CLOUD_HOST}
+    #         PMA_PORTS: ${DB_PORT}, ${DB_CLOUD_PORT}
+    #         PMA_VERBOSES: Docker, Cloud
+    #     networks:
+    #         - backend-network
 
 networks:
     proxy-network: {}
