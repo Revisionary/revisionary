@@ -99,14 +99,6 @@ if [[ ! -d backend ]]; then
 
 fi
 
-# Backend Sources Repo
-if [[ ! -d backend/src ]]; then
-
-	echo "Backend sources clonning..."
-	git clone https://github.com/Revisionary/revisionary-backend-src.git backend/src
-
-fi
-
 # Chrome Repo
 if [[ ! -d chrome ]]; then
 
@@ -169,9 +161,6 @@ elif [[ $ACTION == pull ]]; then
 
 	echo "Backend:"
 	( cd backend && git pull --no-commit --no-rebase )
-
-	echo "Backend Source:"
-	( cd backend/src && git pull --no-commit --no-rebase )
 
 	echo "Chrome:"
 	( cd chrome && git pull --no-commit --no-rebase )
@@ -272,15 +261,6 @@ elif [[ $ACTION == reset-repos ]]; then
 
 		printf "Resetting the backend/ folder ..."
 		( cd "$BASEDIR/backend/" && git reset --hard --quiet && git clean -dfx --quiet && git pull --no-commit --no-rebase --quiet )
-		echo -e " ${GREEN}done${RESET}"
-
-	fi
-
-
-	if [[ $SERVICE == "backend/src" ]] || [[ $SERVICE == "all" ]];then
-
-		printf "Resetting the backend/src/ folder ..."
-		( cd "$BASEDIR/backend/src/" && git reset --hard --quiet && git clean -dfx --quiet && git pull --no-commit --no-rebase --quiet )
 		echo -e " ${GREEN}done${RESET}"
 
 	fi
