@@ -95,7 +95,7 @@ fi
 if [[ ! -d backend ]]; then
 
 	echo "Backend clonning..."
-	git clone https://github.com/Revisionary/revisionary-backend-nginx.git backend
+	git clone https://github.com/Revisionary/revisionary-backend.git backend
 
 fi
 
