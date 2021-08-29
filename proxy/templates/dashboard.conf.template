@@ -1,0 +1,20 @@
+server {
+    listen 80;
+    listen 443 ssl http2;
+
+    ssl_certificate /etc/nginx/certificates/_.${DASHBOARD_DOMAIN}.crt;
+    ssl_certificate_key /etc/nginx/certificates/_.${DASHBOARD_DOMAIN}.key;
+
+    server_name ${DASHBOARD_SUBDOMAIN}.${DASHBOARD_DOMAIN};
+
+    error_log  /var/log/nginx/dashboard_error.log;
+    access_log /var/log/nginx/dashboard_access.log;
+
+
+    location / {
+		proxy_pass http://dashboard:3000;
+		include common/proxy.conf;
+    }
+
+
+}

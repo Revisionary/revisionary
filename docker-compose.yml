@@ -83,6 +83,24 @@ services:
         networks:
             - backend-network
 
+    dashboard:
+        build: ./dashboard
+        image: revisionary_dashboard:latest
+        container_name: revisionary_dashboard
+        restart: "always"
+        # ports:
+        #     - 3000:3000
+        # depends_on:
+        #     - backend
+        # volumes:
+        #     - ./dashboard/src:/dashboard/src
+        networks:
+            - proxy-network
+        environment:
+            API_ENDPOINT: https://${API_SUBDOMAIN}.${API_DOMAIN}/v1/
+            # HOST: 0.0.0.0
+            # PORT: 3000
+
     # landing:
     #     build:
     #         context: ./landing
@@ -98,25 +116,6 @@ services:
     #     environment:
     #         HOST: 0.0.0.0
     #         PORT: 3030
-
-    # dashboard:
-    #     build:
-    #         context: ./dashboard
-    #         dockerfile: Dockerfile-production
-    #     image: revisionary_dashboard:latest
-    #     container_name: revisionary_dashboard
-    #     restart: "always"
-    #     depends_on:
-    #         - backend
-    #     volumes:
-    #         - ./dashboard/src:/dashboard/src
-    #     command: "npm run start"
-    #     networks:
-    #         - backend-network
-    #     environment:
-    #         HOST: 0.0.0.0
-    #         PORT: 3000
-    #         API_ENDPOINT: https://${API_SUBDOMAIN}.${API_DOMAIN}/v1/
 
     # phpmyadmin:
     #     image: phpmyadmin/phpmyadmin:latest
