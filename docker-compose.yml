@@ -15,9 +15,9 @@ services:
             - ./proxy/common:/etc/nginx/common
             - ./proxy/certificates/:/etc/nginx/certificates/
             - ./proxy/logs:/var/log/nginx
-        # networks:
-        #     - proxy-network
-        #     - backend-network
+        networks:
+            - proxy-network
+            - backend-network
 
     backend:
         build:
@@ -37,16 +37,16 @@ services:
             # - ./backend/src/app:/backend/app
             # - ./backend/src/assets:/backend/assets
             # - ./backend/src/index.php:/backend/index.php
-        # networks:
-        #     - backend-network
+        networks:
+            - backend-network
 
     memcached:
         image: memcached:latest
         container_name: revisionary_memcached
         restart: "always"
         command: ["-m", "512m"]
-        # networks:
-        #     - backend-network
+        networks:
+            - backend-network
 
     database:
         image: mysql:latest
@@ -67,8 +67,8 @@ services:
         volumes:
             - ./backend/db/dump:/docker-entrypoint-initdb.d
             # - mysql:/var/lib/mysql
-        # networks:
-        #     - backend-network
+        networks:
+            - backend-network
 
     chrome:
         build: ./chrome
@@ -81,8 +81,8 @@ services:
         volumes:
             - ./backend/src/cache:/chrome/cache
             # - ./chrome/src:/chrome/src
-        # networks:
-        #     - backend-network
+        networks:
+            - backend-network
 
     # landing:
     #     build:
@@ -119,24 +119,22 @@ services:
     #         PORT: 3000
     #         API_ENDPOINT: https://${API_SUBDOMAIN}.${API_DOMAIN}/v1/
 
-    # phpmyadmin:
-    #     image: phpmyadmin/phpmyadmin:latest
-    #     container_name: revisionary_phpmyadmin
-    #     restart: "unless-stopped"
-    #     ports:
-    #         - ${LOCAL_IP}:8000:80
-    #     volumes:
-    #         - ./backend/config/phpmyadmin.ini:/usr/local/etc/php/conf.d/uploads.ini
-    #     environment:
-    #         PMA_HOSTS: ${DB_HOST}, ${DB_CLOUD_HOST}
-    #         PMA_PORTS: ${DB_PORT}, ${DB_CLOUD_PORT}
-    #         PMA_VERBOSES: Docker, Cloud
-    #     networks:
-    #         - backend-network
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin:latest
+        container_name: revisionary_phpmyadmin
+        restart: "unless-stopped"
+        ports:
+            - 8000:80
+        environment:
+            PMA_HOSTS: ${DB_HOST}, ${DB_CLOUD_HOST}
+            PMA_PORTS: ${DB_PORT}, ${DB_CLOUD_PORT}
+            PMA_VERBOSES: Docker, Cloud
+        networks:
+            - backend-network
 
-# networks:
-#     proxy-network: {}
-#     backend-network: {}
+networks:
+    proxy-network: {}
+    backend-network: {}
 
 # volumes:
 #     mysql: {}
