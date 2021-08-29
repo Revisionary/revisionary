@@ -32,11 +32,11 @@ services:
         env_file:
             - ./.env
         volumes:
-            # - ./src/app:/backend/app
-            # - ./src/assets:/backend/assets
-            # - ./src/cache:/backend/cache
-            # - ./src/index.php:/backend/index.php
+            - ./backend/src/cache:/backend/cache
             - ./backend/logs:/var/log/nginx
+            # - ./backend/src/app:/backend/app
+            # - ./backend/src/assets:/backend/assets
+            # - ./backend/src/index.php:/backend/index.php
         # networks:
         #     - backend-network
 
@@ -67,6 +67,20 @@ services:
         volumes:
             - ./backend/db/dump:/docker-entrypoint-initdb.d
             # - mysql:/var/lib/mysql
+        # networks:
+        #     - backend-network
+
+    chrome:
+        build: ./chrome
+        # user: www-data
+        image: revisionary_chrome:latest
+        container_name: revisionary_chrome
+        restart: "always"
+        # ports:
+        #     - 8080:3000
+        volumes:
+            - ./backend/src/cache:/chrome/cache
+            # - ./chrome/src:/chrome/src
         # networks:
         #     - backend-network
 
@@ -104,50 +118,6 @@ services:
     #         HOST: 0.0.0.0
     #         PORT: 3000
     #         API_ENDPOINT: https://${API_SUBDOMAIN}.${API_DOMAIN}/v1/
-
-    # memcached:
-    #     image: memcached:latest
-    #     container_name: revisionary_memcached
-    #     restart: "always"
-    #     command: ["-m", "512m"]
-    #     networks:
-    #         - backend-network
-
-    # database:
-    #     image: mysql:latest
-    #     container_name: revisionary_database
-    #     restart: "unless-stopped"
-    #     command: [
-    #         "--character-set-server=utf8mb4",
-    #         "--collation-server=utf8mb4_unicode_ci",
-    #         "--slow_query_log=ON", # Make this off when in production !!!
-    #         "--long_query_time=2",
-    #         "--slow_query_log_file=/var/lib/mysql/mysql/slow_queries.log",
-    #     ]
-    #     environment:
-    #         MYSQL_DATABASE: ${DB_NAME}
-    #         MYSQL_USER: ${DB_USER}
-    #         MYSQL_PASSWORD: ${DB_PASSWORD}
-    #         MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-    #     volumes:
-    #         - ./database/dump:/docker-entrypoint-initdb.d
-    #         - mysql:/var/lib/mysql
-    #     networks:
-    #         - backend-network
-
-    # chrome:
-    #     build: ./chrome
-    #     user: www-data
-    #     image: revisionary_chrome:latest
-    #     container_name: revisionary_chrome
-    #     restart: "always"
-    #     ports:
-    #         - 8080:3000
-    #     volumes:
-    #         - ./chrome/src:/chrome/src
-    #         - ./backend/src/cache:/chrome/cache
-    #     # networks:
-    #     #     - backend-network
 
     # phpmyadmin:
     #     image: phpmyadmin/phpmyadmin:latest
