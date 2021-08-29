@@ -12,6 +12,7 @@ The new live feedback tool for live websites. You can change any website as you 
 -   127.0.0.1 dww.revisionaryapp.com # Landing
 -   127.0.0.1 dpp.revisionary.co # Dashboard
 -   127.0.0.1 dpi.revisionary.co # API
+-   127.0.0.1 dites.revisionary.co # Sites
 
 ## Note
 
