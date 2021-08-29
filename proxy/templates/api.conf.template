@@ -5,7 +5,7 @@ server {
     ssl_certificate /etc/nginx/certificates/_.${API_DOMAIN}.crt;
     ssl_certificate_key /etc/nginx/certificates/_.${API_DOMAIN}.key;
 
-    server_name ${API_SUBDOMAIN}.${API_DOMAIN};
+    server_name ${API_SUBDOMAIN}.${API_DOMAIN} ${SITES_SUBDOMAIN}.${API_DOMAIN};
 
     error_log  /var/log/nginx/api_error.log;
     access_log /var/log/nginx/api_access.log;
