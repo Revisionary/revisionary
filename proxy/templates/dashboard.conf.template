@@ -14,6 +14,18 @@ server {
     location / {
 		proxy_pass http://dashboard:3000;
 		include common/proxy.conf;
+
+		location /sites {
+			proxy_pass http://backend;
+			include common/proxy.conf;
+
+			sub_filter 'http://${API_SUBDOMAIN}.${API_DOMAIN}/sites/' 'https://${DASHBOARD_SUBDOMAIN}.${DASHBOARD_DOMAIN}/sites/';
+			sub_filter '${API_SUBDOMAIN}.${API_DOMAIN}/sites/' '${DASHBOARD_SUBDOMAIN}.${DASHBOARD_DOMAIN}/sites/';
+			# sub_filter 'http://new.revisionaryapp.com/cache/projects/' 'https://napp.revisionary.co/sites/';
+			# sub_filter 'new.revisionaryapp.com/cache/projects/' 'napp.revisionary.co/sites/';
+			sub_filter_once off;
+			sub_filter_types *;
+		}
     }
 
 
