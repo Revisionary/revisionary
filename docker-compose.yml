@@ -20,82 +20,36 @@ services:
             - backend-network
 
     backend:
-        build:
-            context: ./backend
-            args:
-                API_SUBDOMAIN: ${API_SUBDOMAIN:-dpi}
-                API_DOMAIN: ${API_DOMAIN:-revisionary.co}
-        image: revisionary_backend:latest
-        container_name: revisionary_backend
-        restart: "always"
+        extends:
+            file: ./backend/docker-compose.yml
+            service: backend
         env_file:
-            - ./.env
+            - .env
         volumes:
             - ./backend/src/cache:/backend/cache
-            - ./backend/logs:/var/log/nginx
             # - ./backend/src/app:/backend/app
             # - ./backend/src/assets:/backend/assets
             # - ./backend/src/index.php:/backend/index.php
-        networks:
-            - backend-network
 
     memcached:
-        image: memcached:latest
-        container_name: revisionary_memcached
-        restart: "always"
-        command: ["-m", "512m"]
-        networks:
-            - backend-network
+        extends:
+            file: ./backend/docker-compose.yml
+            service: memcached
 
     database:
-        image: mysql:latest
-        container_name: revisionary_database
-        restart: "unless-stopped"
-        command: [
-            "--character-set-server=utf8mb4",
-            "--collation-server=utf8mb4_unicode_ci",
-            "--slow_query_log=ON", # Make this off when in production !!!
-            "--long_query_time=2",
-            "--slow_query_log_file=/var/lib/mysql/mysql/slow_queries.log",
-        ]
-        environment:
-            MYSQL_DATABASE: ${DB_NAME}
-            MYSQL_USER: ${DB_USER}
-            MYSQL_PASSWORD: ${DB_PASSWORD}
-            MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-        volumes:
-            - ./backend/db/dump:/docker-entrypoint-initdb.d
-            - mysql:/var/lib/mysql
-        networks:
-            - backend-network
+        extends:
+            file: ./backend/docker-compose.yml
+            service: database
 
     chrome:
-        build: ./chrome
-        # user: www-data
-        image: revisionary_chrome:latest
-        container_name: revisionary_chrome
-        restart: "always"
-        # ports:
-        #     - 8080:3000
-        volumes:
-            - ./backend/src/cache:/chrome/cache
-            # - ./chrome/src:/chrome/src
-        networks:
-            - backend-network
+        extends:
+            file: ./chrome/docker-compose.yml
+            service: chrome
 
     dashboard:
-        build: ./dashboard
-        image: revisionary_dashboard:latest
-        container_name: revisionary_dashboard
-        restart: "always"
-        # ports:
-        #     - 3000:3000
-        # depends_on:
-        #     - backend
-        # volumes:
-        #     - ./dashboard/src:/dashboard/src
-        networks:
-            - proxy-network
+        extends:
+            file: ./dashboard/docker-compose.yml
+            service: dashboard
         environment:
             API_ENDPOINT: https://${API_SUBDOMAIN}.${API_DOMAIN}/v1/
             # HOST: 0.0.0.0
