@@ -6,7 +6,7 @@ services:
         container_name: revisionary_proxy
         restart: "always"
         env_file:
-            - ./.env
+            - .env
         ports:
             - 80:80
             - 443:443
@@ -25,11 +25,6 @@ services:
             service: backend
         env_file:
             - .env
-        # volumes:
-            # - ./backend/src/cache:/backend/cache
-            # - ./backend/src/app:/backend/app
-            # - ./backend/src/assets:/backend/assets
-            # - ./backend/src/index.php:/backend/index.php
 
     memcached:
         extends:
@@ -45,8 +40,6 @@ services:
         extends:
             file: ./chrome/docker-compose.yml
             service: chrome
-        # ports:
-        #     - 8080:3000
 
     dashboard:
         extends:
@@ -54,24 +47,11 @@ services:
             service: dashboard
         environment:
             API_ENDPOINT: https://${API_SUBDOMAIN}.${API_DOMAIN}/v1/
-            # HOST: 0.0.0.0
-            # PORT: 3000
 
-    # landing:
-    #     build:
-    #         context: ./landing
-    #         dockerfile: Dockerfile-production
-    #     image: revisionary_landing:latest
-    #     container_name: revisionary_landing
-    #     restart: "always"
-    #     volumes:
-    #         - ./landing/src:/landing/src
-    #     command: "npm run start"
-    #     networks:
-    #         - proxy-network
-    #     environment:
-    #         HOST: 0.0.0.0
-    #         PORT: 3030
+    landing:
+        extends:
+            file: ./landing/docker-compose.yml
+            service: landing
 
     phpmyadmin:
         image: phpmyadmin/phpmyadmin:latest

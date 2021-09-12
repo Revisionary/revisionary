@@ -1,0 +1,20 @@
+server {
+    listen 80;
+    listen 443 ssl http2;
+
+    ssl_certificate /etc/nginx/certificates/_.${LANDING_DOMAIN}.crt;
+    ssl_certificate_key /etc/nginx/certificates/_.${LANDING_DOMAIN}.key;
+
+    server_name ${LANDING_SUBDOMAIN}.${LANDING_DOMAIN};
+
+    error_log  /var/log/nginx/landing_error.log;
+    access_log /var/log/nginx/landing_access.log;
+
+
+    location / {
+		proxy_pass http://landing:3000;
+		include common/proxy.conf;
+    }
+
+
+}

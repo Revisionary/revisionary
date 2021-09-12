@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+    backend:
+        volumes:
+            - ./backend/src/app:/backend/app
+            - ./backend/src/assets:/backend/assets
+            - ./backend/src/index.php:/backend/index.php
+            # - ./backend/src/cache:/backend/cache
+
+    chrome:
+        ports:
+            - 8080:3000
+        volumes:
+            - ./chrome/src:/chrome/src
+
+    dashboard:
+        ports:
+            - 8081:3000
+        volumes:
+            - ./dashboard/src:/dashboard/src
+
+    landing:
+        ports:
+            - 8082:3000
+        volumes:
+            - ./landing/src:/landing/src

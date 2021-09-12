@@ -313,12 +313,14 @@ elif [[ $ACTION == permission-fix ]]; then
 elif [[ $ACTION == create-certificates ]]; then
 
 
+	CERTIFICATES_DIR="$BASEDIR/proxy/certificates"
+
 	# RevisionaryApp.com Certificates
-	if [[ ! -f "$BASEDIR/proxy/certificates/_.revisionaryapp.com.crt" ]] || [[ ! -f "$BASEDIR/proxy/certificates/_.revisionaryapp.com.key" ]];then
+	if [[ ! -f "$CERTIFICATES_DIR/_.revisionaryapp.com.crt" ]] || [[ ! -f "$CERTIFICATES_DIR/_.revisionaryapp.com.key" ]];then
 
 		printf "Creating the self-signed *.revisionaryapp.com certificates ..."
-		docker_compose run --rm --no-deps proxy bash -c "
-			openssl req -x509 -out /etc/ssl/private/_.revisionaryapp.com.crt -keyout /etc/ssl/private/_.revisionaryapp.com.key \
+		docker-compose run --rm --no-deps proxy bash -c "
+			openssl req -x509 -out /etc/nginx/certificates/_.revisionaryapp.com.crt -keyout /etc/nginx/certificates/_.revisionaryapp.com.key \
 			-newkey rsa:2048 -nodes -sha256 \
 			-subj '/CN=*.revisionaryapp.com' -extensions EXT -config <( \
 			printf '[dn]\nCN=*.revisionaryapp.com\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:*.revisionaryapp.com\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth')
@@ -327,17 +329,17 @@ elif [[ $ACTION == create-certificates ]]; then
 
 	else
 
-		echo -e " ${BLUE}Cetificate already exists for 'revisionary.co'${RESET}"
+		echo -e " ${BLUE}Cetificate already exists for 'revisionaryapp.com'${RESET}"
 
 	fi
 
 
 	# Revisionary.co Certificates
-	if [[ ! -f "$BASEDIR/proxy/certificates/_.revisionary.co.crt" ]] || [[ ! -f "$BASEDIR/proxy/certificates/_.revisionary.co.key" ]];then
+	if [[ ! -f "$CERTIFICATES_DIR/_.revisionary.co.crt" ]] || [[ ! -f "$CERTIFICATES_DIR/_.revisionary.co.key" ]];then
 
 		printf "Creating the self-signed *.revisionary.co certificates ..."
-		docker_compose run --rm --no-deps proxy bash -c "
-			openssl req -x509 -out /etc/ssl/private/_.revisionary.co.crt -keyout /etc/ssl/private/_.revisionary.co.key \
+		docker-compose run --rm --no-deps proxy bash -c "
+			openssl req -x509 -out /etc/nginx/certificates/_.revisionary.co.crt -keyout /etc/nginx/certificates/_.revisionary.co.key \
 			-newkey rsa:2048 -nodes -sha256 \
 			-subj '/CN=*.revisionary.co' -extensions EXT -config <( \
 			printf '[dn]\nCN=*.revisionary.co\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:*.revisionary.co\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth')
@@ -346,7 +348,7 @@ elif [[ $ACTION == create-certificates ]]; then
 
 	else
 
-		echo -e " ${BLUE}Cetificate already exists for 'revisionaryapp.com'${RESET}"
+		echo -e " ${BLUE}Cetificate already exists for 'revisionary.co'${RESET}"
 
 	fi
 
